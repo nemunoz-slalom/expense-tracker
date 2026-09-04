@@ -92,7 +92,7 @@ As the household bill manager, I can view recent consumption-by-billing-period f
 1. **Given** a specific service type is selected, **When** the user views consumption, **Then** the chart presents exactly the requested recent billing periods in chronological order, including zero-value periods and the average across all displayed periods.
 2. **Given** monthly and bimonthly services, **When** their values are aggregated, **Then** each bill contributes only to its documented due-date-derived period and bimonthly amounts remain whole rather than being split.
 3. **Given** active list filters, **When** the user exports the report, **Then** the report contains the same filtered, ordered bills, filter period, statuses, and paid/pending counts as the current view.
-4. **Given** no bills match the active export filters, **When** the user requests export, **Then** the user receives an understandable no-data outcome rather than a misleading populated report.
+4. **Given** no bills match the active export filters, **When** the user requests export, **Then** the user receives a valid HTTP 200 PDF containing the active filter context, zero paid and pending counts, no bill rows, and an explicit no-data statement.
 
 ---
 
@@ -113,14 +113,14 @@ As a user on a supported desktop, tablet, or narrow screen, including one who us
 
 ### Edge Cases
 
-- Reject whitespace-only names, unsupported service types, non-finite or negative amounts, impossible calendar dates, malformed identifiers and filters, incomplete custom ranges, and payment dates later than due dates without changing persisted data.
+- Reject whitespace-only names, unsupported service types, non-finite or negative amounts, impossible calendar dates, malformed identifiers and filters, incomplete custom ranges, combined `month` and `from`/`to` query parameters, and payment dates later than due dates without changing persisted data.
 - Treat date-range boundaries as inclusive; handle leap years, month boundaries, the server-local definition of today, and bills sharing a due date deterministically.
 - A partial bill update must validate the complete resulting bill; a request that changes paid from false to true must use the contract's payment-date rule even if it supplies a conflicting date.
 - A missing or concurrently deleted bill must produce a clear not-found outcome. A failed write must not produce a partial record, partial update, or partial delete.
 - A creation-notification request after Undo, deletion, page reload, or expiry race must never create an extra notification. Multiple active Undo windows must be independent.
 - Missing notification credentials and notification delivery failures must be observable to operators but must not make a successful bill create, update, delete, or payment transition fail.
 - Null amounts are excluded from consumption totals; zero amounts are valid and contribute zero. Statistics remain independent of list filters, paid state, and payment date.
-- Export, filtering, and presentation must represent an empty result accurately and must not present stale results after a failed operation.
+- A zero-result export returns a valid HTTP 200 PDF with active filter context, zero paid and pending counts, no bill rows, and an explicit no-data statement. Export, filtering, and presentation must not present stale results after a failed operation.
 
 ## Requirements *(mandatory)*
 
@@ -136,7 +136,7 @@ As a user on a supported desktop, tablet, or narrow screen, including one who us
 
 #### Validation, Consistency, and Service Behavior
 
-- **FR-006**: The product MUST reject a create or update request with a blank name, unsupported type, invalid calendar date, invalid paid value, non-finite amount, negative amount, malformed filter, or invalid identifier, and MUST identify the invalid condition clearly.
+- **FR-006**: The product MUST reject a create or update request with a blank name, unsupported type, invalid calendar date, invalid paid value, non-finite amount, negative amount, malformed filter, combined `month` and `from`/`to` filters, or invalid identifier, and MUST identify the invalid condition clearly.
 - **FR-007**: The product MUST require a due date and MUST reject any resulting bill whose payment date is later than its due date.
 - **FR-008**: Partial changes MUST be assessed against the complete resulting bill, must affect only supplied permitted fields, and must preserve the bill identifier.
 - **FR-009**: Every create, update, and delete operation MUST be all-or-nothing. Failed operations MUST leave persisted data and the displayed collection consistent.
@@ -148,7 +148,7 @@ As a user on a supported desktop, tablet, or narrow screen, including one who us
 - **FR-012**: Each returned bill MUST include a fresh derived status: paid takes precedence; otherwise overdue is before today, urgent is today through seven calendar days ahead, and normal is later.
 - **FR-013**: The product MUST calculate today and date-dependent status, payment, and billing-period behavior using the server-local timezone consistently.
 - **FR-014**: Bill collections and exports MUST order bills as overdue unpaid, urgent unpaid, normal unpaid, then paid; within each group they MUST order by due date then identifier ascending.
-- **FR-015**: The product MUST support all-time, current-month, previous-month, and user-selected inclusive due-date-range views, plus an optional service-type and paid-state filter for service consumers. Combined filters MUST use AND behavior.
+- **FR-015**: The product MUST support all-time, current-month, previous-month, and user-selected inclusive due-date-range views, plus an optional service-type and paid-state filter for service consumers. `month` is mutually exclusive with `from` and `to`; type and paid filters combine with the selected date mode using AND behavior.
 - **FR-016**: The user interface MUST default to the current-month bill view and provide an understandable way to select the documented date presets, a custom inclusive range, all time, and a service type.
 
 #### Notifications
@@ -157,14 +157,14 @@ As a user on a supported desktop, tablet, or narrow screen, including one who us
 - **FR-018**: During the creation Undo period, the user MUST be able to cancel the local countdown and delete the just-created bill; deletion, including this Undo path, MUST never send a notification.
 - **FR-019**: When an un-cancelled creation Undo period expires, the product MUST request exactly one creation notification for the existing bill. Creation without a payment date MUST not create a timer, Undo affordance, or notification request.
 - **FR-020**: A false-to-true paid transition MUST assign the payment date defined by the frozen contract and attempt an immediate payment notification. Repeating an already-paid update MUST not send a duplicate.
-- **FR-021**: Notification delivery MUST occur only with complete configured credentials. Missing credentials and delivery failures MUST be recorded for operators but MUST NOT roll back or fail the successful primary bill operation.
+- **FR-021**: Notification delivery MUST occur only with complete configured credentials. The browser may request the application notify endpoint but MUST NOT access Telegram directly or receive Telegram credentials or transport details. Missing credentials and delivery failures MUST be recorded for operators but MUST NOT roll back or fail the successful primary bill operation.
 
 #### Analytics and Export
 
 - **FR-022**: When a user selects a specific service type, the product MUST provide its documented recent consumption-by-billing-period result; no consumption chart is shown when all types are selected.
 - **FR-023**: Consumption periods MUST be derived from due date and service frequency as defined by the frozen contract. Monthly services use monthly periods, electricity and gas use bimonthly periods, and bimonthly amounts MUST remain whole.
 - **FR-024**: The statistics result MUST contain exactly the requested valid number of periods in chronological order, include zero-value periods, include only non-null amounts regardless of paid state or payment date, and calculate the average across every returned period including zeros.
-- **FR-025**: The product MUST export the same filtered, ordered bill set shown in the bill list, including report title, active period or all-dates label, documented bill columns, and paid/pending counts.
+- **FR-025**: The product MUST export the same filtered, ordered bill set shown in the bill list, including report title, active period or all-dates label, documented bill columns, and paid/pending counts. When the selected set is empty, it MUST return a valid HTTP 200 PDF with filter context, zero counts, no bill rows, and an explicit no-data statement.
 
 #### User Experience, Accessibility, and Responsive Behavior
 

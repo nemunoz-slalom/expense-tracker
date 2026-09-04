@@ -20,6 +20,8 @@ Build the documented, local single-user Services App from this documentation-onl
 | Operational time basis | Server-local timezone for status, paid transition dates, and statistics anchoring; deployment documentation must state the configured host timezone. |
 | Performance objectives | List p95 under 2 seconds for 1,000 bills; type statistics under 1 second; PDF export under 5 seconds; responsive UI motion targets 60fps. |
 | Security constraints | No authentication in the local MVP; allow only configured CORS origins, parameterize every query, validate all external inputs, omit secrets and sensitive paths from responses/logs, and prevent committing environment/data files. |
+| Filter contract | `month` is mutually exclusive with `from` and `to`; mixed date-filter modes return `400 ValidationError`. |
+| Empty export contract | A valid zero-result export returns `200 application/pdf` with filter context, zero counts, no rows, and an explicit no-data statement. |
 | Scope boundary | Implement FR-001 through FR-038 only. Do not introduce accounts, authorization, categories, budgets, banking data, cloud sync, multi-currency, recurrence, or a persistent notification queue. |
 
 ## Constitution Check
@@ -137,9 +139,10 @@ expense-tracker/
 ### Hard dependency sequence
 
 1. **Integration foundation**: establish package boundaries, scripts, environment shape, `.gitignore`, test ports, app/listener separation, and test database path.
-2. **Database/Data**: initialize Service schema and repository interface; prove writes are atomic and isolated.
-3. **Backend core**: implement contract parsing/validation, CRUD/status/filtering/error translation over the repository.
-4. **Frontend core**: integrate CRUD/list/filter UI to contract-compliant backend after independently passing mocked API tests.
+2. **Frontend platform**: after client setup, establish i18n, project-owned shadcn primitives, global theme/accessibility tokens, and toast/live-feedback infrastructure. This may run in parallel with Database/Data work.
+3. **Database/Data**: initialize Service schema and repository interface; prove writes are atomic and isolated.
+4. **Backend core**: implement contract parsing/validation, CRUD/status/filtering/error translation over the repository.
+5. **Frontend core**: integrate CRUD/list/filter UI only after the frontend platform is established and independently passing mocked API tests.
 5. **Notifications**: server notification endpoint and paid-transition behavior require core mutation operations; browser timer requires successful create/delete API actions.
 6. **Analytics/PDF**: statistics and export require reusable filtered ordered selection semantics; chart and download UI require their endpoints.
 7. **Release assembly**: full E2E, failure-mode, accessibility, responsive, performance, configuration, and production-build validation.
@@ -166,7 +169,7 @@ After foundation and contract review, Database/Data and the Frontend UI shell ma
 - Create idempotent SQLite schema initialization for exactly the durable Service fields in [data-model.md](data-model.md).
 - Use database constraints for representable type, paid flag, non-negative amount, and timestamp defaults where SQLite can enforce them; retain application validation for calendar correctness and complete PATCH-state rules.
 - Implement parameterized `findAll`, `findById`, `create`, `update`, `delete`, and filtered-selection methods. Repository results are mapped to plain domain objects, never raw rows.
-- Design filtering queries so all active predicates are ANDed and `month` handling follows the frozen contract. Reuse the same ordered selection for list and export.
+- Design filtering queries so type and paid predicates are ANDed with exactly one date mode. Reject requests that combine `month` with `from` or `to` as `400 ValidationError`. Reuse the same ordered selection for list and export.
 - Add indexes for type/date and paid/date query paths only after query behavior is correct; validate with representative 1,000-record test data.
 - Verify restart durability, rollback/no partial mutation on errors, and strict production/test database separation.
 
@@ -178,14 +181,14 @@ After foundation and contract review, Database/Data and the Frontend UI shell ma
 - Keep route handlers to parsing/validation/delegation/HTTP translation; put complete resulting-state validation and paid transition rules in `service.service.js`.
 - Generate status per response; never add a status or billing-period persistence column.
 - Implement statistics exactly from the contract's current server-local anchor, with the specified type frequencies, chronological zero-filled output, non-null amount inclusion, and zero-inclusive averages.
-- Make PDF output select the same ordered filtered records as list; ensure report fields/counts and filter labeling meet the product specification.
+- Make PDF output select the same ordered filtered records as list; when that selection is empty, return a valid PDF with filter context, zero counts, no rows, and an explicit no-data statement.
 - Isolate Telegram transport, redact credentials, log unavailable credentials and delivery failures, and make delivery best effort. Creation creates no notification/timer; notification endpoint sends only when called; only false-to-true paid transition sends immediately.
 
 ### 3. Frontend/UI
 
 - Define TypeScript types matching the frozen API payloads and typed error handling. Keep `fetch` exclusively in `client/src/api/`.
 - Build `useServices` for fetching, mutations, refetch/error states, and stale-result avoidance; build `useConsumptionStats` only for a selected type.
-- Build `useUndoTimer` as browser-local state with independent timers keyed by created Service ID. Start only after a create response with `paymentDate`, cancel before DELETE on Undo, call notify once at natural expiry, and clear timers on teardown. It must never imply a backend timer.
+- Build `useUndoTimer` as browser-local state with independent timers keyed by created Service ID. Start only after a create response with `paymentDate`, cancel before DELETE on Undo, call the application notify endpoint once at natural expiry, and clear timers on teardown. It must never imply a backend timer or direct browser-to-Telegram communication.
 - Compose forms, list/actions, filters, confirmation, feedback, chart, and export around shadcn/ui primitives. Calendar selection must be a `Calendar` in a `Popover`; type filtering uses `Select`; deletion uses `AlertDialog`; feedback uses Sonner; countdown feedback uses `Progress`.
 - Default UI filtering to current month, combine filter values by AND, hide the chart for All types, and generate export query parameters from the active view.
 - Put every visible/accessible string and dynamic message in `locales/en.json`. Use theme tokens instead of component hex values; include status text/icons beyond color.

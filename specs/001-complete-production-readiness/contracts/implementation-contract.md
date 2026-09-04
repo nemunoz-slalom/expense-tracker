@@ -21,17 +21,19 @@ This artifact creates **no endpoint, field, error, or behavioral change**. Backe
 ### Frontend/UI owner
 
 - Treat the frozen response types and error shape as the API-service boundary; browser `fetch` occurs only in `client/src/api/`.
-- Include only contract-supported query values for list and export, and pass active date/type/paid filters consistently so the report represents the visible selection.
+- Include only contract-supported query values for list and export, never combine `month` with `from` or `to`, and pass active date/type/paid filters consistently so the report represents the visible selection.
 - Render server-returned `status`; do not create a competing client status authority.
 - Own the creation Undo timer locally: start after successful create only when `paymentDate` is present, delete and cancel on Undo, notify once on natural expiry, and never expect an API timer field or server scheduling.
 - Call statistics only for a selected concrete type, render contract period identifiers as localized labels without parsing display text, and never derive chart values from the filtered list.
-- Keep Telegram tokens/chat IDs out of public runtime configuration, browser state, errors, diagnostics, and source artifacts.
+- Call only the application notify endpoint after local timer expiry; never call Telegram directly. Keep Telegram tokens/chat IDs and transport details out of public runtime configuration, browser state, errors, diagnostics, and source artifacts.
 
 ### Shared integration behavior
 
 - Use `YYYY-MM-DD` only for API date values and ISO 8601 datetimes for timestamps.
 - Use contract ServiceType values exactly; UI labels are presentation/i18n concerns, not values transmitted in altered form.
 - Preserve the contract's list/export ordering and inclusive due-date filter semantics. Do not introduce client-side ordering that changes server order.
+- Reject a request that combines `month` with `from` or `to` as a `400 ValidationError`; do not silently choose one date mode.
+- A valid empty export remains a `200 application/pdf` response with active filter context, zero paid and pending counts, no service rows, and an explicit no-data statement.
 - Keep API base URL configurable via public `REACT_APP_*` configuration only; configure backend CORS to accept explicitly allowed local client origins.
 - Handle `400`, `404`, `409` when applicable, and `500` through typed API errors that are rendered as accessible localized feedback without exposing internals.
 

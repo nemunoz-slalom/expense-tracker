@@ -384,6 +384,10 @@ Accepts the same filtering parameters as the list endpoint:
 - `paid=true|false`
 
 The response is `200` with `Content-Type: application/pdf` and contains the currently filtered services.
+When no services match valid filters, the endpoint still returns `200` with
+`Content-Type: application/pdf`. The report includes the active filter context,
+zero paid and pending counts, and the statement `No services match the selected
+filters.` It contains no service rows.
 
 ## Telegram Notification and Undo Behavior
 
@@ -453,7 +457,8 @@ If the server runs in UTC, "today" is UTC midnight. If the server runs in a diff
 Query parameters `from` and `to` define an **inclusive date range** for `dueDate`:
 - `from=2026-09-01&to=2026-09-30` includes all services with `dueDate >= 2026-09-01` AND `dueDate <= 2026-09-30`.
 - `month=2026-09` is shorthand for `from=2026-09-01&to=2026-09-30`.
-- If both `month` and `from`/`to` are supplied, `month` takes precedence (or return HTTP 400 if ambiguous).
+- `month` cannot be combined with `from` or `to`. A request that combines them
+  returns `400` with `ValidationError`.
 - All dates are compared in `YYYY-MM-DD` form; time of day is irrelevant.
 
 ### Consumption by Billing Period
@@ -501,6 +506,9 @@ Before parallel agents start:
 ## Non-Goals
 
 - No authentication or authorization.
-- No Telegram endpoint exposed to the browser.
+- No direct browser access to the Telegram Bot API, Telegram credentials, or a
+  client-configured Telegram transport. The frontend may call the application
+  endpoint `POST /api/services/:id/notify`; only the backend communicates with
+  Telegram.
 - No persistent notification-job table; creation Undo countdowns are owned by
   the frontend in local state.

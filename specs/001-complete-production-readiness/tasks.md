@@ -49,10 +49,26 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 - [ ] T015 [P] Implement typed domain errors and redacted structured logging in `server/services/errors.js` and `server/utils/logger.js`
 - [ ] T016 [P] Write focused date, validation, filter, and sorting tests in `server/__tests__/unit/domain-utils.test.js`
 - [ ] T017 Implement strict calendar, server-local date, and identifier utilities in `server/utils/dates.js`
-- [ ] T018 Implement complete-Service and contract-query validation utilities in `server/utils/validation.js` and `server/utils/filters.js`
+- [ ] T018 Implement complete-Service and contract-query validation utilities, including HTTP 400 rejection of mixed `month` and `from`/`to` date-filter modes, in `server/utils/validation.js` and `server/utils/filters.js`
 - [ ] T019 Implement deterministic derived-status and urgency ordering utilities in `server/utils/sorting.js`
 
 **Checkpoint**: A fresh `services.test.db` can initialize the sole durable Service model, repository results are plain domain objects, and pure domain rules have passing focused tests. No status, billing period, timer, queue, account, category, budget, or authentication data is persisted.
+
+---
+
+## Phase 2B: Frontend Platform (Blocking UI Prerequisites)
+
+**Purpose**: Establish the required localization, component, theme, accessibility, and toast foundations before any feature component is implemented.
+
+**Critical**: These tasks may proceed in parallel with Phase 2 after T005, but T032–T036, T044–T045, T055, T064, and T073 must not begin until this platform is stable. Frontend/UI owns these shared files and merges them as one coordinated platform PR.
+
+- [ ] T025 [P] Define frozen-contract Service, DTO, filter, and typed API-error models in `client/src/types/services.ts`
+- [ ] T069 [P] Initialize localization and load the English catalog at the application entry point in `client/src/index.tsx` and `client/src/locales/en.json`
+- [ ] T070 [P] Install and configure project-owned accessible shadcn primitives in `client/src/components/ui/`
+- [ ] T071 [P] Define contrast-compliant dark theme tokens, focus states, touch targets, responsive rules, and reduced-motion overrides in `client/src/styles/globals.css`
+- [ ] T072 Implement persistent actionable error toasts and announced success/loading feedback in `client/src/hooks/useToasts.ts`
+
+**Checkpoint**: The client has a working i18n provider, project-owned shadcn primitives, theme and accessibility tokens, and an announced toast surface. Feature components must consume these foundations rather than create substitutes.
 
 ---
 
@@ -72,8 +88,7 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 
 ### Implementation for User Story 1
 
-- [ ] T025 [P] [US1] Define frozen-contract Service, DTO, filter, and typed API-error models in `client/src/types/services.ts`
-- [ ] T026 [US1] Implement the sole CRUD and notify browser-fetch boundary in `client/src/api/services.api.ts`
+- [ ] T026 [US1] Implement the sole CRUD and application-notify browser-fetch boundary, without Telegram credentials or direct Telegram transport, in `client/src/api/services.api.ts`
 - [ ] T027 [US1] Implement create, get, update, paid-transition, delete, response-status projection, and complete-state validation in `server/services/service.service.js`
 - [ ] T028 [US1] Implement CRUD HTTP parsing, validation translation, no-content deletion, and client-safe errors in `server/routes/services.routes.js`
 - [ ] T029 [US1] Construct Express middleware, error handling, and core service-route mounting without listener startup in `server/app.js`
@@ -97,14 +112,14 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 
 ### Tests for User Story 2
 
-- [ ] T037 [P] [US2] Write status grouping, due-date/id tie-breaker, and filter-precedence unit tests in `server/__tests__/unit/list-selection.test.js`
-- [ ] T038 [P] [US2] Write real-SQLite month, inclusive-range, type, paid, malformed-query, and ordered-list integration tests in `server/__tests__/integration/services-list.test.js`
+- [ ] T037 [P] [US2] Write status grouping, due-date/id tie-breaker, and mixed-date-filter HTTP 400 unit tests in `server/__tests__/unit/list-selection.test.js`
+- [ ] T038 [P] [US2] Write real-SQLite month, inclusive-range, type, paid, malformed mixed-date-filter query, and ordered-list integration tests in `server/__tests__/integration/services-list.test.js`
 - [ ] T039 [P] [US2] Write mocked-transport current-month, custom-calendar, type, empty-state, and localized status UI tests in `client/__tests__/filters-and-list.test.tsx`
 - [ ] T040 [P] [US2] Write the independent filtered-list and consumption-entry Chromium journey in `tests/e2e/filter-services.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T041 [US2] Serialize only contract-supported list filters and preserve returned order in `client/src/api/services.api.ts`
+- [ ] T041 [US2] Serialize exactly one contract-supported date-filter mode, prevent mixed modes in the UI, and preserve returned order in `client/src/api/services.api.ts`
 - [ ] T042 [US2] Implement reusable filtered ordered Service selection for list consumers in `server/services/service.service.js`
 - [ ] T043 [US2] Delegate validated list query filters and preserve server ordering in `server/routes/services.routes.js`
 - [ ] T044 [US2] Implement Calendar-in-Popover date presets and Select-based type filtering in `client/src/components/DateFilter.tsx` and `client/src/components/TypeFilter.tsx`
@@ -133,7 +148,7 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 - [ ] T051 [US3] Implement server-only, redacted, best-effort Telegram transport in `server/external/telegram.client.js`
 - [ ] T052 [US3] Implement creation and payment notification formatting and sending without timer ownership in `server/services/notification.service.js`
 - [ ] T053 [US3] Trigger payment notification only after a successful false-to-true atomic transition in `server/services/service.service.js`
-- [ ] T054 [US3] Implement notify endpoint delegation and no-notification DELETE behavior in `server/routes/services.routes.js`
+- [ ] T054 [US3] Implement application-notify endpoint delegation and no-notification DELETE behavior in `server/routes/services.routes.js`
 - [ ] T055 [US3] Implement local keyed timers, accessible Undo countdown feedback, restored form values, and toast actions in `client/src/hooks/useUndoTimer.ts`, `client/src/hooks/useToasts.ts`, `client/src/hooks/useServices.ts`, and `client/src/components/UndoToast.tsx`
 
 **Checkpoint**: US3 has no backend creation timer, queue, schedule, or cancellation endpoint. Undo deletes without delivery; natural expiry requests exactly one notification; paid delivery is immediate only on the first false-to-true transition and cannot fail the saved mutation.
@@ -149,15 +164,15 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 ### Tests for User Story 4
 
 - [ ] T056 [P] [US4] Write monthly/bimonthly period derivation, zero filling, null exclusion, full bimonthly amount, and average unit tests in `server/__tests__/unit/stats.service.test.js`
-- [ ] T057 [P] [US4] Write shared-selection report fields, counts, filter labels, and empty-result PDF unit tests in `server/__tests__/unit/pdf.service.test.js`
-- [ ] T058 [P] [US4] Write fresh-SQLite statistics and binary-PDF contract integration tests in `server/__tests__/integration/stats-export.test.js`
-- [ ] T059 [P] [US4] Write mocked-transport chart visibility, period labeling, average, export query, download, and no-data UI tests in `client/__tests__/stats-export.test.tsx`
+- [ ] T057 [P] [US4] Write shared-selection report fields, counts, filter labels, and valid HTTP 200 empty-result PDF unit tests in `server/__tests__/unit/pdf.service.test.js`
+- [ ] T058 [P] [US4] Write fresh-SQLite statistics and binary-PDF contract integration tests, including valid HTTP 200 empty exports, in `server/__tests__/integration/stats-export.test.js`
+- [ ] T059 [P] [US4] Write mocked-transport chart visibility, period labeling, average, export query, download, and localized empty-report success-feedback UI tests in `client/__tests__/stats-export.test.tsx`
 - [ ] T060 [P] [US4] Write independent type-filtered chart and filtered-PDF Chromium journeys in `tests/e2e/stats-export.spec.ts`
 
 ### Implementation for User Story 4
 
 - [ ] T061 [US4] Implement server-local, series-first billing-period aggregation without durable periods in `server/services/stats.service.js`
-- [ ] T062 [US4] Implement binary PDF rendering from the reusable filtered ordered selection in `server/services/pdf.service.js`
+- [ ] T062 [US4] Implement binary PDF rendering from the reusable filtered ordered selection, including filter context, zero counts, no rows, and an explicit no-data statement for a valid empty result, in `server/services/pdf.service.js`
 - [ ] T063 [US4] Implement static statistics and PDF route handlers before parameterized service-ID routes in `server/routes/stats.routes.js`, `server/routes/export.routes.js`, and `server/app.js`
 - [ ] T064 [US4] Implement typed statistics/export fetches, selected-type state, localized period formatting, chart display, and filtered download actions in `client/src/api/stats.api.ts`, `client/src/api/export.api.ts`, `client/src/hooks/useConsumptionStats.ts`, `client/src/components/ConsumptionByPeriodChart.tsx`, and `client/src/App.tsx`
 
@@ -180,10 +195,6 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 ### Implementation for User Story 5
 
 - [ ] T068 [US5] Apply configured CORS, startup/shutdown records, and safe unexpected-error translation in `server/app.js`, `server/server.js`, `server/config/env.js`, and `server/utils/logger.js`
-- [ ] T069 [US5] Initialize localization and load the English catalog at the application entry point in `client/src/index.tsx` and `client/src/locales/en.json`
-- [ ] T070 [US5] Install and configure project-owned accessible shadcn primitives in `client/src/components/ui/`
-- [ ] T071 [US5] Define contrast-compliant dark theme tokens, focus states, touch targets, responsive rules, and reduced-motion overrides in `client/src/styles/globals.css`
-- [ ] T072 [US5] Implement persistent actionable error toasts and announced success/loading feedback in `client/src/hooks/useToasts.ts`
 - [ ] T073 [US5] Apply localized labels, error associations, live regions, responsive layout, and motion-safe composition across primary flows in `client/src/App.tsx`
 
 **Checkpoint**: US5 completes the listed primary flows without keyboard traps, unlabeled controls, horizontal scrolling at supported widths, client-visible Telegram credentials, raw server details, or loss of a successfully persisted bill when a notification fails.
@@ -213,16 +224,17 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 ### Hard dependencies
 
 1. Phase 1 is hard-blocking: the Integration owner serializes `package.json`, all lockfiles, `.env.example`, `.gitignore`, and `playwright.config.ts`.
-2. Phase 2 is hard-blocking for every story: configuration, fresh test support, schema/migration, repository, and shared domain rules must be stable before feature routes, services, or live UI integration.
-3. US1 requires Phase 2 and is the hard prerequisite for US3 because notifications rely on create, update, and delete semantics.
-4. US2 requires Phase 2 and is a hard prerequisite for US4 because statistics/export reuse the validated filtered, ordered selection and active filter state.
-5. US4 route wiring requires US1 application construction and must register its static routes before the parameterized `/:id` routes.
-6. US5 reliability implementation can begin after Phase 2, but its full verification depends on the implemented primary flows of US1–US4.
-7. Phase 8 requires all selected stories to have passed their own checkpoints; its shared runner and Playwright hotspot work is serialized through Integration and QA/Security.
+2. Phase 2 is hard-blocking for backend feature work: configuration, fresh test support, schema/migration, repository, and shared domain rules must be stable before feature routes and services. Phase 2B is hard-blocking for frontend feature-component work.
+3. Phase 2B may begin after T005 in parallel with Phase 2. T025 and T069–T071 may proceed in parallel; T072 follows T069–T070. Core UI composition must use this platform rather than create duplicate primitives, locale setup, theme values, or feedback surfaces.
+4. US1 requires Phase 2; its frontend components also require Phase 2B. US1 is the hard prerequisite for US3 because notifications rely on create, update, and delete semantics.
+5. US2 requires Phase 2 and is a hard prerequisite for US4 because statistics/export reuse the validated filtered, ordered selection and active filter state.
+6. US4 route wiring requires US1 application construction and must register its static routes before the parameterized `/:id` routes.
+7. US5 reliability implementation can begin after the relevant backend or Phase 2B foundations, but its full verification depends on the implemented primary flows of US1–US4.
+8. Phase 8 requires all selected stories to have passed their own checkpoints; its shared runner and Playwright hotspot work is serialized through Integration and QA/Security.
 
 ### Soft dependencies and permissible parallelism
 
-US1 and the initial UI shell may proceed in separate worktrees after Phase 2 using frozen-contract mocks. US2 server selection work and its client filter controls may proceed in parallel after US1’s contract-facing list seam is stable. After US1, US3 backend transport/formatting and browser timer tests may proceed separately, then converge only at the shared `useServices.ts` and `services.routes.js` files. After US2, US4 server statistics/PDF work and client chart/download work may proceed separately, then converge at `server/app.js` and `client/src/App.tsx`. QA may write `[P]` tests against fixtures and mocked transport while implementation owners work in their owned worktrees.
+After T005, Frontend/UI establishes Phase 2B in a dedicated worktree while Database/Data and Backend/API complete Phase 2. US1 frontend components begin only after Phase 2B and may use frozen-contract mocks while backend core proceeds. US2 server selection work and its client filter controls may proceed in parallel after US1’s contract-facing list seam is stable. After US1, US3 backend transport/formatting and browser timer tests may proceed separately, then converge only at the shared `useServices.ts` and `services.routes.js` files. After US2, US4 server statistics/PDF work and client chart/download work may proceed separately, then converge at `server/app.js` and `client/src/App.tsx`. QA may write `[P]` tests against fixtures and mocked transport while implementation owners work in their owned worktrees.
 
 ### User-story dependency table
 
@@ -249,16 +261,16 @@ Backend/API worktree: T009, T015, T016, T017, T018, T019
 
 Merge the Database/Data interface before Backend/API starts repository-backed service work.
 
-### US1 test-first worktrees
+### Frontend platform and US1 worktrees
 
 ```text
+Frontend platform worktree: T025, T069, T070, T071, T072
 Backend test worktree: T020 and T021
 Frontend test worktree: T022 and T023
 QA worktree: T024
-Frontend type worktree: T025
 ```
 
-After those tests establish the expected behavior, serialize T026–T036 where they touch the same API, route, and App entrypoint files.
+After the platform and tests establish the expected behavior, serialize T026–T036 where they touch the same API, route, and App entrypoint files.
 
 ### US3 split ownership
 
@@ -284,7 +296,7 @@ The Backend/API owner performs T063 last so `/stats/type/:type` and `/export/pdf
 
 ### MVP first
 
-Complete Phases 1 and 2, then complete and independently validate US1 through T036. This is the smallest deployable increment: durable bill management with tested error handling and no unimplemented notification behavior implied to users.
+Complete Phases 1, 2, and 2B, then complete and independently validate US1 through T036. This is the smallest deployable increment: durable bill management with tested error handling and no unimplemented notification behavior implied to users.
 
 ### Incremental delivery
 
@@ -292,4 +304,4 @@ Add US2 for reliable prioritization and filtering, then US3 for controlled notif
 
 ### Task validation
 
-There are 82 unchecked tasks with continuous IDs T001 through T082. Setup, Foundational, and Polish tasks have no user-story label; every story task has exactly one `[US1]` through `[US5]` label. Every task includes at least one exact planned path, and `[P]` appears only on independently ownable work.
+There are 82 unchecked tasks with continuous IDs T001 through T082. Setup, Foundational, Frontend Platform, and Polish tasks have no user-story label; every remaining story task has exactly one `[US1]` through `[US5]` label. Every task includes at least one exact planned path, and `[P]` appears only on independently ownable work.
