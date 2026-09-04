@@ -18,12 +18,7 @@ export default defineConfig({
     }
   ],
   webServer: [
-    {
-      command: 'npm --prefix server run start:test',
-      url: backendUrl,
-      reuseExistingServer: !process.env.CI,
-      timeout: 120_000
-    },
+      url: `${backendUrl}/api/services`,
     {
       command: 'npm --prefix client run start:test',
       url: frontendUrl,
