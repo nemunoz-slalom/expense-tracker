@@ -19,16 +19,25 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'npm --prefix server run start:test',
+      command: 'npm --prefix server run start',
       url: `${backendUrl}/api/services`,
       reuseExistingServer: !process.env.CI,
-      timeout: 120_000
+      timeout: 120_000,
+      env: {
+        NODE_ENV: 'test',
+        PORT: new URL(backendUrl).port || '5001',
+        DATABASE_PATH: 'services.test.db'
+      }
     },
     {
-      command: 'npm --prefix client run start:test',
+      command: 'npm --prefix client run start',
       url: frontendUrl,
       reuseExistingServer: !process.env.CI,
-      timeout: 120_000
+      timeout: 120_000,
+      env: {
+        PORT: new URL(frontendUrl).port || '3001',
+        REACT_APP_API_URL: backendUrl
+      }
     }
   ]
 });
