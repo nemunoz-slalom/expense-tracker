@@ -21,14 +21,14 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 
 **Purpose**: Establish the coordinated package, runner, configuration, and source-layout boundaries without adding product behavior.
 
-- [ ] T001 Initialize root E2E orchestration scripts and dependencies in `package.json`
-- [ ] T002 Generate the root dependency lockfile for the coordinated E2E toolchain in `package-lock.json`
-- [ ] T003 Initialize server scripts and runtime dependencies in `server/package.json`
-- [ ] T004 Generate the server dependency lockfile in `server/package-lock.json`
-- [ ] T005 Initialize client scripts and frontend dependencies in `client/package.json`
-- [ ] T006 Generate the client dependency lockfile in `client/package-lock.json`
-- [ ] T007 Configure Chromium test servers, fixed test ports, and serialized reset ownership in `playwright.config.ts`
-- [ ] T008 Define safe environment examples and exclude environment and SQLite data files in `.env.example` and `.gitignore`
+- [X] T001 Initialize root E2E orchestration scripts and dependencies in `package.json`
+- [X] T002 Generate the root dependency lockfile for the coordinated E2E toolchain in `package-lock.json`
+- [X] T003 Initialize server scripts and runtime dependencies in `server/package.json`
+- [X] T004 Generate the server dependency lockfile in `server/package-lock.json`
+- [X] T005 Initialize client scripts and frontend dependencies in `client/package.json`
+- [X] T006 Generate the client dependency lockfile in `client/package-lock.json`
+- [X] T007 Configure Chromium test servers, fixed test ports, and serialized reset ownership in `playwright.config.ts`
+- [X] T008 Define safe environment examples and exclude environment and SQLite data files in `.env.example` and `.gitignore`
 
 **Checkpoint**: Integration owns the manifests, lockfiles, environment example, ignore rules, and Playwright configuration. These files are serialized merge hotspots and no feature worktree edits them without rebasing through that owner.
 
