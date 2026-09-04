@@ -7,8 +7,8 @@
     "start": "node server.js",
     "start:test": "cross-env NODE_ENV=test PORT=5001 DATABASE_PATH=services.test.db node server.js",
     "test": "jest --runInBand --passWithNoTests",
-    "test:unit": "jest --runInBand --passWithNoTests server/__tests__/unit",
-    "test:integration": "jest --runInBand --passWithNoTests server/__tests__/integration",
+    "test:unit": "jest --runInBand --passWithNoTests __tests__/unit",
+    "test:integration": "jest --runInBand --passWithNoTests __tests__/integration",
     "lint": "eslint --no-error-on-unmatched-pattern ."
   },
   "dependencies": {
