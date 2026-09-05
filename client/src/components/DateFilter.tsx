@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Calendar } from './ui/Calendar';
@@ -20,13 +21,23 @@ interface DateFilterProps {
 
 export function DateFilter({ value, onChange }: DateFilterProps): JSX.Element {
   const { t } = useTranslation();
+  const dateRangeLabelId = useId();
   const setMode = (mode: DateFilterMode): void => onChange({ ...value, mode });
+  const handleFromChange = (from: string): void => {
+    const nextTo = value.to && from > value.to ? from : value.to;
+    onChange({ ...value, from, to: nextTo });
+  };
+  const handleToChange = (to: string): void => {
+    const rangeWasInvalid = Boolean(value.from && to < value.from);
+    const nextFrom = rangeWasInvalid ? to : value.from;
+    onChange({ ...value, from: nextFrom, to });
+  };
 
   return (
     <div className="filter-field">
-      <label>{t('filter.dateRange')}</label>
+      <label id={dateRangeLabelId}>{t('filter.dateRange')}</label>
       <Select value={value.mode} onValueChange={(mode) => setMode(mode as DateFilterMode)}>
-        <SelectTrigger aria-label={t('filter.dateRange')}><SelectValue /></SelectTrigger>
+        <SelectTrigger aria-label={t('filter.dateRange')} aria-labelledby={dateRangeLabelId}><SelectValue /></SelectTrigger>
         <SelectContent>
           <SelectItem value="currentMonth">{t('filter.currentMonth')}</SelectItem>
           <SelectItem value="previousMonth">{t('filter.previousMonth')}</SelectItem>
@@ -43,7 +54,7 @@ export function DateFilter({ value, onChange }: DateFilterProps): JSX.Element {
               </Button>
             </PopoverTrigger>
             <PopoverContent>
-              <Calendar value={value.from} onSelect={(from) => onChange({ ...value, from, to: value.to && from > value.to ? from : value.to })} />
+              <Calendar value={value.from} onSelect={handleFromChange} />
             </PopoverContent>
           </Popover>
           <Popover>
@@ -53,7 +64,7 @@ export function DateFilter({ value, onChange }: DateFilterProps): JSX.Element {
               </Button>
             </PopoverTrigger>
             <PopoverContent>
-              <Calendar value={value.to} onSelect={(to) => onChange({ ...value, to: value.from && to < value.from ? value.from : to })} />
+              <Calendar value={value.to} onSelect={handleToChange} />
             </PopoverContent>
           </Popover>
         </div>

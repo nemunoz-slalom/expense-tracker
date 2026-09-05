@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const UNDO_DURATION_MS = 8_000;
+export const UNDO_DURATION_MS = 8_000;
 
 export interface UndoTimer {
   serviceId: number;
@@ -32,9 +32,15 @@ export function useUndoTimer(): UseUndoTimerResult {
     const timeout = window.setTimeout(() => {
       timers.current.delete(serviceId);
       setActiveTimers((current) => current.filter((timer) => timer.serviceId !== serviceId));
-      Promise.resolve()
-        .then(() => onExpire())
-        .catch(() => undefined);
+
+      try {
+        const result = onExpire();
+        if (result instanceof Promise) {
+          void result.catch(() => undefined);
+        }
+      } catch {
+        // Timer cleanup has already happened; ignore expiration errors after the deadline.
+      }
     }, UNDO_DURATION_MS);
 
     timers.current.set(serviceId, timeout);

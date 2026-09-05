@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { UNDO_DURATION_MS } from '../hooks/useUndoTimer';
 import { Button } from './ui/Button';
 import { Progress } from './ui/Progress';
 
@@ -8,8 +9,6 @@ interface UndoToastProps {
   expiresAt: number;
   onUndo: () => void;
 }
-
-const undoDurationMs = 8_000;
 
 function remainingMilliseconds(expiresAt: number): number {
   return Math.max(0, expiresAt - Date.now());
@@ -31,7 +30,7 @@ export function UndoToast({ expiresAt, onUndo }: UndoToastProps): JSX.Element {
     <div className="undo-toast">
       <span>{t('undo.created')}</span>
       <span className="sr-only">{t('undo.countdown', { seconds })}</span>
-      <Progress value={(remaining / undoDurationMs) * 100} />
+      <Progress value={(remaining / UNDO_DURATION_MS) * 100} />
       <Button className="toast-action" onClick={onUndo}>{t('undo.action')}</Button>
     </div>
   );
