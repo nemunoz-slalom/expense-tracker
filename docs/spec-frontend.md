@@ -121,8 +121,11 @@ The frontend shall provide a form to create new bills with validation feedback.
   - "Service name" (text input) - required
   - "Service type" (select dropdown) - required, options: Electricity, Gas, Internet, Mobile, Water
   - "Amount" (number input, step 0.01) - optional; displayed as $X,XXX.XX when present
-  - "Payment date" (shadcn `Calendar` in a `Popover`) - optional; when omitted the bill is saved without triggering a Telegram notification or Undo toast
   - "Due date" (shadcn `Calendar` in a `Popover`) - required
+  - "Payment date" (shadcn `Calendar` in a `Popover`) - optional and shown after Due date; when omitted the bill is saved without triggering a Telegram notification or Undo toast
+- A selected date shall render in the trigger as `Weekday DD, Mon.` (for example, `Tuesday 09, Sep.`), while the submitted value remains `YYYY-MM-DD`.
+- Choosing a date closes its `Popover`.
+- When Payment date is selected, an accessible inline X action within the date field shall clear it; this action is not shown while the optional field is empty.
 - The "Save" button shall be disabled until all required fields (name, type, due date) are filled. Payment date does not block Save.
 - Form buttons: "Save" (primary, disabled until valid), "Cancel" (outline)
 - Clicking "Cancel" while the form has unsaved changes shall prompt a confirmation ("Discard changes?"); on confirm the modal closes without saving, on cancel the modal stays open with values intact.
@@ -201,14 +204,14 @@ The frontend shall allow deleting a bill with confirmation.
 - Clicking "Cancel" shall close the dialog without deleting.
 - On error, display an error toast.
 
-### FR-9: Date filter (dropdown with presets + Range Calendar)
+### FR-9: Date filter (dropdown with presets + date pickers)
 The frontend shall provide a single date-filter control combining preset options and a custom range picker.
 - The control shall render as a dropdown trigger (shadcn `Popover`) whose text reflects the active selection.
 - On app load, the control shall default to "This month" (day 1 through last day of the current month).
 - Clicking the trigger shall open a dropdown with four options:
   - **This month** — selects the full current calendar month.
   - **Last month** — selects the full previous calendar month.
-  - **Custom range...** — opens a shadcn Range Calendar (`react-day-picker` mode="range") inside the same Popover, allowing the user to click or drag a start and end date. The calendar shall include an "Apply" button to confirm and a "Back" button to return to the preset list.
+  - **Custom range...** — reveals Start date and End date shadcn Calendars, each in its own Popover and using single-date selection. Selecting either date applies the value immediately and closes that Popover.
   - **All time** — clears the date filter and shows all bills regardless of date.
 - A checkmark shall appear next to the currently active preset.
 - Trigger text shall adapt to the active selection:
@@ -428,7 +431,7 @@ The frontend shall work on modern browsers.
 
 ### FR-25: UI component library (shadcn/ui)
 The frontend shall use [shadcn/ui](https://ui.shadcn.com/) as the sole design system for all interactive UI primitives.
-- Components shall be installed via the shadcn CLI into `client/src/components/ui/` and are part of the project's own codebase (not a package dependency).
+- Components shall be maintained as canonical shadcn/ui source files in `client/src/components/ui/`, using lowercase kebab-case filenames and `@/components/ui/*` imports; they are part of the project's own codebase, not a package dependency.
 - shadcn/ui components are built on Radix UI primitives (accessible focus, keyboard, ARIA behavior) and styled with Tailwind CSS.
 - Tailwind CSS shall be configured with CSS variables mapped to the defined palette so shadcn/ui components render in the dark theme automatically (see FR-17).
 - No other component library (Material UI, Chakra UI, Ant Design, Bootstrap, etc.) shall be added; a single design system keeps the app coherent.
@@ -449,8 +452,8 @@ The following shadcn/ui primitives shall be installed and used. Each entry lists
 - `Input` — "Service name" text field. Paired with `Label`.
 - `Label` — persistent visible label above every form input.
 - `Select` (`SelectTrigger`, `SelectContent`, `SelectItem`, `SelectValue`) — "Service type" dropdown in the bill form (Electricity, Gas, Internet, Mobile, Water); "Type" filter dropdown in the filter panel (All, Electricity, Gas, Internet, Mobile, Water).
-- `Calendar` — date picker for "Payment date" and "Due date" form fields (single date mode); Range Calendar for custom date filter (range mode). Rendered inside a `Popover`.
-- `Popover` (`PopoverTrigger`, `PopoverContent`) — wraps `Calendar` for date pickers in the form; wraps the date filter preset list + Range Calendar in the filter panel.
+- `Calendar` — single-date picker for Payment date, Due date, Start date, and End date. Rendered inside a `Popover`.
+- `Popover` (`PopoverTrigger`, `PopoverContent`) — wraps each Calendar date picker in the form and filter panel.
 
 **Actions & Buttons**
 - `Button` — all clickable actions throughout the app:
@@ -483,7 +486,7 @@ The following shadcn/ui primitives shall be installed and used. Each entry lists
   `XAxis`, `YAxis`). Auto-themed with the defined palette CSS variables.
 
 **Utility**
-- `cn` helper (from `lib/utils.ts`) — merges Tailwind classes conditionally. Used in every component for conditional styling (e.g., status-based background color on table rows).
+- `cn` helper (from `lib/cn.ts`) — merges Tailwind classes conditionally. Used in every component for conditional styling.
 
 #### Feature component → shadcn/ui composition
 
@@ -492,7 +495,7 @@ Each feature component composes shadcn primitives as follows:
 - **ServiceForm.tsx** — `Dialog` > `DialogContent` > `Label` + `Input` (name) + `Select` (type) + `Input` (amount, type=number) + `Popover` > `Calendar` (payment date) + `Popover` > `Calendar` (due date) + `DialogFooter` > `Button` (Save) + `Button` (Cancel).
 - **ServiceList.tsx** — `Table` (desktop/tablet) or mapped `Card` list (mobile) + `Skeleton` (loading state). Renders `ServiceItem` per row/card.
 - **ServiceItem.tsx** — Desktop: `TableRow` > 7 × `TableCell` in order: name, type, amount (right-aligned, "$X,XXX.XX" or "—"), payment date ("MMM DD" or "—"), due date ("MMM DD"), status (`Badge`), actions (flex justify-end: `Button` Mark as paid + `DropdownMenu` ⋮, kebab always rightmost). Mobile: `Card` > `CardHeader` (name left + `Badge` right) + `CardContent` (type · amount line, due · paid line) + `CardFooter` (actions right-aligned, same kebab-rightmost rule).
-- **DateFilter.tsx** — `Popover` > preset list (`Button` items: This month, Last month, Custom range, All time) or `Calendar` (mode=range) + `Button` (Apply, Back).
+- **DateFilter.tsx** — preset `Select` (This month, Last month, Custom range, All time) and, for Custom range, two `Popover` > single-mode `Calendar` controls for Start date and End date.
 - **TypeFilter.tsx** — `Select` with fixed options.
 - **DeleteConfirmation.tsx** — `AlertDialog` > `AlertDialogContent` with bill name/type in body, `AlertDialogAction` (Confirm, destructive) + `AlertDialogCancel` (Cancel).
 - **UndoToast.tsx** — `Sonner` custom toast > message text + `Progress` (8s linear) + `Button` (Undo, outline).

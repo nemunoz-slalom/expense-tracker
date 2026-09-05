@@ -20,6 +20,8 @@ The frontend uses ES module import syntax with TypeScript. The backend uses Node
 
 Prefer importing the smallest public surface needed from a module. Keep dependency direction clear: shared or lower-level utilities should not depend on application entry points, and UI components should use the existing API boundary rather than duplicating backend access logic. When the same fetch call appears in more than one component, extract it into a hook or service module instead of duplicating it.
 
+Use the configured frontend alias for project modules: `@/components/ui/button`, `@/lib/date`, and `@/types/services`. shadcn primitive source files use lowercase kebab-case names (`alert-dialog.tsx`, `dropdown-menu.tsx`); import their public exports rather than deep-importing Radix dependencies from feature components.
+
 ## Linter and Quality Checks
 
 Use the repository's available automated checks before submitting a change. Run the relevant package tests and a production build or other package-level validation for the code being changed. The frontend package uses the Create React App ESLint configuration through its React toolchain; keep new code free of ESLint errors and address warnings when practical. The backend follows the same JavaScript conventions; if a standalone ESLint configuration is added, it should be used consistently across the affected package.
@@ -52,7 +54,7 @@ Build React components from predictable state and event flows. Give controls cle
 
 Use accessible semantic elements and preserve keyboard and screen-reader behavior when changing markup. Every input needs a persistent visible label, every icon-only button needs an accessible name, and modals need proper focus management on open and close. Prefer the project's component and styling conventions over isolated custom implementations. Keep CSS selectors scoped and use CSS variables from the defined palette rather than hardcoding color values in individual components.
 
-Compose the UI from shadcn/ui primitives (`client/src/components/ui/`) rather than building parallel versions of the same control. If a button, dialog, input, table, or badge is needed, use the shadcn/ui component; do not introduce a second component library alongside it. When a shadcn primitive needs to behave slightly differently, edit the primitive file directly (they are project-owned code, not a package) or extend it via composition. Feature components should be mostly layout and event wiring on top of these primitives, not restyled duplicates of them.
+Compose the UI from canonical shadcn/ui primitives (`client/src/components/ui/`) rather than building parallel versions of the same control. If a button, dialog, input, table, or badge is needed, use the shadcn/ui component; do not introduce a second component library alongside it. Feature components use Tailwind's standard spacing, typography, radius, and semantic color utilities (`p-4`, `gap-4`, `text-sm`, `rounded-lg`, `bg-primary`) instead of one-off CSS values. Global CSS is limited to Tailwind layers, Dracula theme tokens, and reusable feature layout rules.
 
 Animations from Framer Motion should enhance perceived responsiveness, not delay user actions. Respect the user's `prefers-reduced-motion` preference; if motion is reduced, disable entrance and exit animations while preserving essential feedback (color changes, focus indicators, toast messages).
 

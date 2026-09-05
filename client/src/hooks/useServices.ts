@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import * as servicesApi from '../api/services.api';
-import { CreateServiceRequest, ServiceFilters, ServiceResponse, UpdateServiceRequest } from '../types/services';
+import { CreateServiceRequest, ServiceFilters, ServiceResponse, UpdateServiceRequest } from '@/types/services';
 
 const defaultFilters: ServiceFilters = {};
 

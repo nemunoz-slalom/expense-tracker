@@ -7,7 +7,7 @@ import { DateFilterValue } from './components/DateFilter';
 import { FilterPanel } from './components/FilterPanel';
 import { ServiceList } from './components/ServiceList';
 import { UndoToast } from './components/UndoToast';
-import { Button } from './components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { useServices } from './hooks/useServices';
 import { ToastProvider, useToasts } from './hooks/useToasts';
 import { useUndoTimer } from './hooks/useUndoTimer';
@@ -55,7 +55,7 @@ function ServiceManager(): JSX.Element {
         const service = await create(data);
         success(t('service.created'));
         if (service.paymentDate) {
-          let toastId = 0;
+          let toastId: string | number = 0;
           const expiresAt = start(service.id, async () => {
             dismiss(toastId);
             try {

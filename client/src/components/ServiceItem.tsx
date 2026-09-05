@@ -2,10 +2,10 @@ import { useTranslation } from 'react-i18next';
 
 import { CircleAlert, CircleCheck, CircleDot, Clock3 } from 'lucide-react';
 
-import { Badge } from './ui/Badge';
-import { Button } from './ui/Button';
-import { Card } from './ui/Card';
-import { ServiceResponse } from '../types/services';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { ServiceResponse } from '@/types/services';
 
 interface ServiceItemProps {
   service: ServiceResponse;
@@ -29,7 +29,7 @@ export function ServiceItem({ service, onEdit, onPaid, onDelete }: ServiceItemPr
 
   return <Card className="service-item">
     <div><strong>{service.name}</strong><span>{t(`service.type.${service.type}`)}</span></div>
-    <Badge className={`status-${service.status}`}><StatusIcon aria-hidden="true" size={16} /> {status}</Badge>
+    <Badge variant="outline" className={`status-${service.status}`}><StatusIcon aria-hidden="true" size={16} /> {status}</Badge>
     <div>{formattedAmount}</div>
     <div>
       <span>{t('service.dueDate')}: {service.dueDate}</span>
@@ -38,9 +38,9 @@ export function ServiceItem({ service, onEdit, onPaid, onDelete }: ServiceItemPr
       )}
     </div>
     <div className="service-actions">
-      {!service.paid && <Button className="secondary" onClick={() => onPaid(service)}>{t('service.markPaid')}</Button>}
-      <Button className="secondary" onClick={() => onEdit(service)}>{t('service.editAction')}</Button>
-      <Button className="destructive" onClick={() => onDelete(service)}>{t('service.delete')}</Button>
+      {!service.paid && <Button variant="outline" onClick={() => onPaid(service)}>{t('service.markPaid')}</Button>}
+      <Button variant="outline" onClick={() => onEdit(service)}>{t('service.editAction')}</Button>
+      <Button variant="destructive" onClick={() => onDelete(service)}>{t('service.delete')}</Button>
     </div>
   </Card>;
 }

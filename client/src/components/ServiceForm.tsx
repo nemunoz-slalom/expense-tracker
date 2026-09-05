@@ -1,14 +1,16 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { X } from 'lucide-react';
 
-import { Button } from './ui/Button';
-import { Calendar } from './ui/Calendar';
-import { Dialog, DialogContent, DialogTitle } from './ui/Dialog';
-import { Input } from './ui/Input';
-import { Label } from './ui/Label';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/Popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/Select';
-import { CreateServiceRequest, ServiceResponse, ServiceType, serviceTypes } from '../types/services';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { dateFromKey, dateKey, dateLabel } from '@/lib/date';
+import { CreateServiceRequest, ServiceResponse, ServiceType, serviceTypes } from '@/types/services';
 
 interface ServiceFormProps {
   open: boolean;
@@ -33,6 +35,7 @@ export function ServiceForm({ open, service, initialValues = null, onOpenChange,
   const [values, setValues] = useState<FormValues>(emptyValues);
   const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [openCalendar, setOpenCalendar] = useState<'paymentDate' | 'dueDate' | null>(null);
 
   useEffect(() => {
     setValues(service ? {
@@ -80,8 +83,8 @@ export function ServiceForm({ open, service, initialValues = null, onOpenChange,
           <div className="form-field"><Label htmlFor="name">{t('service.name')}</Label><Input id="name" value={values.name} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? 'name-error' : undefined} onChange={(event) => update('name', event.target.value)} />{errors.name && <p id="name-error" className="field-error">{errors.name}</p>}</div>
           <div className="form-field"><Label>{t('service.type')}</Label><Select value={values.type} onValueChange={(value) => update('type', value)}><SelectTrigger aria-label={t('service.type')}><SelectValue placeholder={t('service.type')} /></SelectTrigger><SelectContent>{serviceTypes.map((type) => <SelectItem key={type} value={type}>{t(`service.type.${type}`)}</SelectItem>)}</SelectContent></Select>{errors.type && <p className="field-error">{errors.type}</p>}</div>
           <div className="form-field"><Label htmlFor="amount">{t('service.amount')}</Label><Input id="amount" type="number" min="0" step="0.01" value={values.amount} onChange={(event) => update('amount', event.target.value)} />{errors.amount && <p className="field-error">{errors.amount}</p>}</div>
-          {(['paymentDate', 'dueDate'] as const).map((field) => <div className="form-field" key={field}><Label>{t(`service.${field}`)}</Label><Popover><PopoverTrigger asChild><Button className="date-button" aria-label={t(`service.${field}`)}>{values[field] || t('service.selectDate')}</Button></PopoverTrigger><PopoverContent><Calendar value={values[field]} onSelect={(date) => update(field, date)} /></PopoverContent></Popover>{errors[field] && <p className="field-error">{errors[field]}</p>}</div>)}
-          <div className="form-actions"><Button type="button" className="secondary" onClick={() => onOpenChange(false)}>{t('service.cancel')}</Button><Button type="submit" disabled={isSaving}>{t('service.save')}</Button></div>
+          {(['dueDate', 'paymentDate'] as const).map((field) => <div className="form-field" key={field}><Label>{t(`service.${field}`)}</Label><div className="relative"><Popover open={openCalendar === field} onOpenChange={(nextOpen) => setOpenCalendar(nextOpen ? field : null)}><PopoverTrigger asChild><Button variant="outline" className="date-button w-full pr-10" aria-label={t(`service.${field}`)}>{values[field] ? dateLabel(values[field]) : t('service.selectDate')}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={dateFromKey(values[field])} onSelect={(date) => { if (date) { update(field, dateKey(date)); setOpenCalendar(null); } }} initialFocus /></PopoverContent></Popover>{field === 'paymentDate' && values.paymentDate && <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2" aria-label={t('service.clearPaymentDate')} onClick={() => update('paymentDate', '')}><X aria-hidden="true" className="h-4 w-4" /></Button>}</div>{errors[field] && <p className="field-error">{errors[field]}</p>}</div>)}
+          <div className="form-actions"><Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t('service.cancel')}</Button><Button type="submit" disabled={isSaving}>{t('service.save')}</Button></div>
         </form>
       </DialogContent>
     </Dialog>

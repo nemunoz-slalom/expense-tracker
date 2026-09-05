@@ -8,7 +8,7 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogTitle,
-} from './ui/AlertDialog';
+} from '@/components/ui/alert-dialog';
 
 interface DeleteConfirmationProps {
   serviceName: string | null;
@@ -36,8 +36,8 @@ export function DeleteConfirmation({ serviceName, onOpenChange, onConfirm }: Del
         <AlertDialogTitle>{t('delete.title')}</AlertDialogTitle>
         <AlertDialogDescription>{t('delete.description', { name: serviceName })}</AlertDialogDescription>
         <div className="form-actions">
-          <AlertDialogCancel className="button secondary">{t('service.cancel')}</AlertDialogCancel>
-          <AlertDialogAction className="button destructive" onClick={(event) => { event.preventDefault(); void onConfirm(); }}>{t('delete.confirm')}</AlertDialogAction>
+          <AlertDialogCancel>{t('service.cancel')}</AlertDialogCancel>
+          <AlertDialogAction onClick={(event) => { event.preventDefault(); void onConfirm(); }}>{t('delete.confirm')}</AlertDialogAction>
         </div>
       </AlertDialogContent>
     </AlertDialog>

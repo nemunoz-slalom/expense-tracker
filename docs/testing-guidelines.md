@@ -138,6 +138,8 @@ easy to regress, so each one MUST have at least one automated test.
 ### UI primitives
 
 17. Date selection renders a shadcn/ui `Calendar` inside a `Popover`; no native `<input type="date">` exists in the rendered output.
+18. Selecting a date closes its Popover and displays the English label format `Tuesday 09, Sep.`, while the API value remains `YYYY-MM-DD`.
+19. The form renders Due date before the optional Payment date, and a selected Payment date can be cleared with its accessible inline clear action.
 
 ---
 
