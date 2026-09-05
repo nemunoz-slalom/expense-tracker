@@ -40,7 +40,7 @@ The frontend shall load and display the app with correct theme on first render.
 
 ### FR-2: Display bill list
 The frontend shall render a list of bills with all relevant information.
-- Each bill shall display: service name, type, amount (formatted as $X,XXX.XX if set), payment date (if set), due date, and status badge.
+- Each bill shall display: service name, type, amount (formatted as `$ X,XXX.XX` if set), payment date (if set), due date, and status badge.
 - Due and payment dates shall be displayed in English as `Weekday DD, Mon.` (for example, `Tuesday 04, Aug.`). If the payment date is the current local date, it shall be displayed as `Today`.
 - Display formatting shall not alter the `YYYY-MM-DD` values exchanged with the API.
 - The list shall use shadcn `Table` on desktop and tablet (≥768px) and shadcn `Card` on mobile (<768px, graceful degradation).
@@ -62,10 +62,10 @@ Columns shall appear in this exact order, left to right:
 |---|--------|---------|--------|-------|
 | 1 | Name | Service name | Plain text | Left-aligned, font-weight 500 |
 | 2 | Type | Service type | Plain text | Electricity, Gas, Internet, Mobile, Water |
-| 3 | Amount | Bill total | `$X,XXX.XX` or "—" if not set | Right-aligned |
-| 4 | Payment Date | Date paid | `MMM DD` (e.g., "Sep 15") or "—" if not set | Center-aligned |
-| 5 | Due Date | Deadline | `MMM DD` (e.g., "Sep 20") | Center-aligned |
-| 6 | Status | Urgency badge | `Badge` component | OVERDUE (red), DUE SOON (yellow), NORMAL (cyan), PAID (green) |
+| 3 | Status | Urgency badge | `Badge` component | OVERDUE (red), DUE SOON (orange), UPCOMING (cyan), PAID (green) |
+| 4 | Amount | Bill total | `$ X,XXX.XX` or "—" if not set | Right-aligned |
+| 5 | Payment Date | Date paid | `MMM DD` (e.g., "Sep 15") or "—" if not set | Center-aligned |
+| 6 | Due Date | Deadline | `MMM DD` (e.g., "Sep 20") | Center-aligned |
 | 7 | Actions | Action buttons | Buttons, right-aligned | See layout below |
 
 #### Actions column layout
@@ -92,8 +92,8 @@ Each bill renders as a shadcn `Card`. Content is stacked vertically:
 
 ```
 ┌─────────────────────────────────┐
-│ CFE                   🔴OVERDUE │  ← CardHeader: name (left) + Badge (right)
-│ Electricity · $450.00           │  ← CardContent line 1: type + amount
+│ CFE                     OVERDUE │  ← CardHeader: name (left) + Badge (right)
+│ Electricity · $ 450.00          │  ← CardContent line 1: type + amount
 │ Due: Sep 05 · Paid: Sep 15      │  ← CardContent line 2: dates
 │                [Mark as paid] [⋮]│  ← CardFooter: actions (right-aligned)
 └─────────────────────────────────┘
@@ -108,11 +108,11 @@ Each bill renders as a shadcn `Card`. Content is stacked vertically:
 
 ### FR-3: Display status badges
 The frontend shall show visual status indicators for each bill using badges.
-- Overdue bills (dueDate < today) shall show a red badge: 🔴 OVERDUE
-- Bills due within 7 days shall show a yellow badge: 🟡 DUE SOON
-- Bills due more than 7 days away shall show a gray/cyan badge: ⚪ NORMAL
-- Paid bills shall show a green badge: ✅ PAID
-- Badge colors shall match the defined palette (red: #ff5555, yellow: #f1fa8c, cyan: #8be9fd, green: #50fa7b)
+- Overdue bills (dueDate < today) shall show a red OVERDUE badge.
+- Bills due within 7 days shall show an orange DUE SOON badge.
+- Bills due more than 7 days away shall show a cyan UPCOMING badge.
+- Paid bills shall show a green PAID badge.
+- Badge colors shall match the defined palette (red: #ff5555, orange: #ffb86c, cyan: #8be9fd, green: #50fa7b)
 - Badge styling shall be consistent across all bill items.
 - The badge shall update immediately when a bill's status changes.
 
@@ -122,7 +122,7 @@ The frontend shall provide a form to create new bills with validation feedback.
 - Form fields (English labels):
   - "Service name" (text input) - required
   - "Service type" (select dropdown) - required, options: Electricity, Gas, Internet, Mobile, Water
-  - "Amount" (number input, step 0.01) - optional; displayed as $X,XXX.XX when present
+  - "Amount" (currency-formatted text input with decimal keypad) - optional; displayed as `$ X,XXX.XX` when present and normalized to a number before the API request
   - "Due date" (shadcn `Calendar` in a `Popover`) - required
   - "Payment date" (shadcn `Calendar` in a `Popover`) - optional and shown after Due date; when omitted the bill is saved without triggering a Telegram notification or Undo toast
 - A selected date shall render in the trigger as `Weekday DD, Mon.` (for example, `Tuesday 09, Sep.`), while the submitted value remains `YYYY-MM-DD`.
@@ -187,7 +187,7 @@ The frontend shall allow marking a bill as paid with a single click.
   - Disable the button temporarily (show loading state).
   - Send PATCH to `/api/services/:id` with `{ paid: true }`. The backend owns the payment date assignment and preserves the existing amount.
   - On success, refresh the bill list and display a success toast: "✅ Paid".
-  - The bill shall update immediately (badge changes to ✅ PAID, "Mark as paid" button disappears, only kebab menu remains).
+  - The bill shall update immediately (badge changes to PAID, "Mark as paid" button disappears, only kebab menu remains).
 - The backend sends a Telegram notification immediately (no Undo for mark-as-paid).
 - On error, display an error toast and re-enable the button.
 - There shall be no confirmation dialog (direct action).
@@ -213,7 +213,7 @@ The frontend shall provide a single date-filter control combining preset options
 - Clicking the trigger shall open a dropdown with four options:
   - **This month** — selects the full current calendar month.
   - **Last month** — selects the full previous calendar month.
-  - **Custom range...** — reveals Start date and End date shadcn Calendars, each in its own Popover and using single-date selection. Selecting either date applies the value immediately and closes that Popover.
+  - **Custom range...** — reveals one shadcn Calendar in range mode inside a Popover. Selecting both ends applies the values immediately and closes the Popover.
   - **All time** — clears the date filter and shows all bills regardless of date.
 - A checkmark shall appear next to the currently active preset.
 - Trigger text shall adapt to the active selection:
@@ -454,7 +454,7 @@ The following shadcn/ui primitives shall be installed and used. Each entry lists
 - `Input` — "Service name" text field. Paired with `Label`.
 - `Label` — persistent visible label above every form input.
 - `Select` (`SelectTrigger`, `SelectContent`, `SelectItem`, `SelectValue`) — "Service type" dropdown in the bill form (Electricity, Gas, Internet, Mobile, Water); "Type" filter dropdown in the filter panel (All, Electricity, Gas, Internet, Mobile, Water).
-- `Calendar` — single-date picker for Payment date, Due date, Start date, and End date. Rendered inside a `Popover`.
+- `Calendar` — single-date picker for Payment date and Due date, plus a range-mode picker for the custom date filter. Rendered inside a `Popover`.
 - `Popover` (`PopoverTrigger`, `PopoverContent`) — wraps each Calendar date picker in the form and filter panel.
 
 **Actions & Buttons**
@@ -469,7 +469,7 @@ The following shadcn/ui primitives shall be installed and used. Each entry lists
 **Status & Feedback**
 - `Badge` — status indicator per bill row. Custom variants mapped to status:
   - variant `overdue` — red (#ff5555), label "OVERDUE".
-  - variant `urgent` — yellow (#f1fa8c), dark text, label "DUE SOON".
+  - variant `urgent` — orange (#ffb86c), dark text, label "DUE SOON".
   - variant `normal` — cyan (#8be9fd), dark text, label "NORMAL".
   - variant `paid` — green (#50fa7b), dark text, label "PAID".
 - `Sonner` (toast) — all notification toasts:
@@ -494,10 +494,10 @@ The following shadcn/ui primitives shall be installed and used. Each entry lists
 
 Each feature component composes shadcn primitives as follows:
 
-- **ServiceForm.tsx** — `Dialog` > `DialogContent` > `Label` + `Input` (name) + `Select` (type) + `Input` (amount, type=number) + `Popover` > `Calendar` (payment date) + `Popover` > `Calendar` (due date) + `DialogFooter` > `Button` (Save) + `Button` (Cancel).
+- **ServiceForm.tsx** — `Dialog` > `DialogContent` > `Label` + `Input` (name) + `Select` (type) + currency-formatted `Input` (amount, text input with decimal keypad) + `Popover` > `Calendar` (payment date) + `Popover` > `Calendar` (due date) + `DialogFooter` > `Button` (Save) + `Button` (Cancel).
 - **ServiceList.tsx** — `Table` (desktop/tablet) or mapped `Card` list (mobile) + `Skeleton` (loading state). Renders `ServiceItem` per row/card.
-- **ServiceItem.tsx** — Desktop: `TableRow` > 7 × `TableCell` in order: name, type, amount (right-aligned, "$X,XXX.XX" or "—"), payment date ("MMM DD" or "—"), due date ("MMM DD"), status (`Badge`), actions (flex justify-end: `Button` Mark as paid + `DropdownMenu` ⋮, kebab always rightmost). Mobile: `Card` > `CardHeader` (name left + `Badge` right) + `CardContent` (type · amount line, due · paid line) + `CardFooter` (actions right-aligned, same kebab-rightmost rule).
-- **DateFilter.tsx** — preset `Select` (This month, Last month, Custom range, All time) and, for Custom range, two `Popover` > single-mode `Calendar` controls for Start date and End date.
+- **ServiceItem.tsx** — Desktop: `TableRow` > 7 × `TableCell` in order: name, type, status (`Badge`), amount (right-aligned, "$ X,XXX.XX" or "—"), payment date ("MMM DD" or "—"), due date ("MMM DD"), actions (flex justify-end: `Button` Mark as paid + `DropdownMenu` ⋮, kebab always rightmost). Mobile: `Card` > `CardHeader` (name left + `Badge` right) + `CardContent` (type · amount line, due · paid line) + `CardFooter` (actions right-aligned, same kebab-rightmost rule).
+- **DateFilter.tsx** — preset `Select` (This month, Last month, Custom range, All time) and, for Custom range, one `Popover` > range-mode `Calendar`.
 - **TypeFilter.tsx** — `Select` with fixed options.
 - **DeleteConfirmation.tsx** — `AlertDialog` > `AlertDialogContent` with bill name/type in body, `AlertDialogAction` (Confirm, destructive) + `AlertDialogCancel` (Cancel).
 - **UndoToast.tsx** — `Sonner` custom toast > message text + `Progress` (8s linear) + `Button` (Undo, outline).

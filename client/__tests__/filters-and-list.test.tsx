@@ -32,6 +32,8 @@ describe('service filters and list', () => {
     expect(await screen.findByText('CFE')).toBeTruthy();
     expect(mockedApi.listServices).toHaveBeenCalledWith({ month: currentMonth() });
     expect(screen.getByText('Overdue')).toBeTruthy();
+    expect(screen.getByText('Overdue').className).toContain('status-overdue');
+    expect(screen.getByText('$ 450.00')).toBeTruthy();
   });
 
   it('formats list dates and labels a payment made today', async () => {
@@ -60,6 +62,16 @@ describe('service filters and list', () => {
 
     expect(screen.getByRole('combobox', { name: 'Date range' })).toBeTruthy();
     expect(screen.getByText('Current month')).toBeTruthy();
+  });
+
+  it('shows the active range in the range-calendar trigger', async () => {
+    render(<App />);
+    await screen.findByText('CFE');
+
+    fireEvent.click(screen.getByRole('combobox', { name: 'Date range' }));
+    fireEvent.click(screen.getByText('Custom range'));
+
+    expect(await screen.findByRole('button', { name: 'Select date range' })).toBeTruthy();
   });
 
   it('offers a reset action when active filters return no services', async () => {

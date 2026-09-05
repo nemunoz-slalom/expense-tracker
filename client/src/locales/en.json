@@ -50,6 +50,8 @@
   "filter.allTime": "All time",
   "filter.startDate": "Start date",
   "filter.endDate": "End date",
+  "filter.selectDateRange": "Select date range",
+  "filter.selectedDateRange": "{{from}} – {{to}}",
   "filter.serviceType": "Service type filter",
   "filter.allTypes": "All types",
   "filter.reset": "Reset filters",
