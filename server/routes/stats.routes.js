@@ -34,6 +34,10 @@ function createStatsRouter(statsService) {
     }
   });
 
+  router.use((request, response) => {
+    response.status(404).json({ error: 'NotFoundError', message: 'Not found' });
+  });
+
   return router;
 }
 
