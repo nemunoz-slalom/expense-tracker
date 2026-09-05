@@ -32,13 +32,9 @@ export function ServiceItem({ service, onEdit, onPaid, onDelete }: ServiceItemPr
     <Badge className={`status-${service.status}`}><StatusIcon aria-hidden="true" size={16} /> {status}</Badge>
     <div>{formattedAmount}</div>
     <div>
-      <span>{t('service.dueDate')}</span>
-      <span>{service.dueDate}</span>
+      <span>{t('service.dueDate')}: {service.dueDate}</span>
       {service.paymentDate && (
-        <>
-          <span>{t('service.paymentDate')}</span>
-          <span>{service.paymentDate}</span>
-        </>
+        <span>{t('service.paymentDate')}: {service.paymentDate}</span>
       )}
     </div>
     <div className="service-actions">
