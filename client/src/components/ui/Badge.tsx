@@ -1,0 +1,7 @@
+import { HTMLAttributes } from 'react';
+
+import { cn } from '../../lib/cn';
+
+export function Badge({ className, ...props }: HTMLAttributes<HTMLSpanElement>): JSX.Element {
+  return <span className={cn('badge', className)} {...props} />;
+}
