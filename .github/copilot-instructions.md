@@ -77,8 +77,8 @@ npm run test:e2e -- --ui
 ```
 
 **Port Configuration (fixed, non-conflicting):**
-- Development: Frontend 3000, Backend 5000
-- Testing: Frontend 3001, Backend 5001
+- Development: Frontend 3000, Backend 5001
+- Testing: Frontend 3001, Backend 5002
 - Test database: `services.test.db` (separate from dev database)
 
 ## High-Level Architecture

@@ -159,7 +159,7 @@ After foundation and contract review, Database/Data and the Frontend UI shell ma
 | `server/app.js` and route order | Backend/API/Domain | Register statistics/export static routes before `/:id`; one owner performs route wiring. |
 | `server/db/schema.js`, repository interface, fixtures | Database/Data | Land schema/interface first; no service owner writes SQL. |
 | `client/src/App.tsx`, global styles, shadcn components, `en.json` | Frontend/UI | Batch composition, tokens, primitive installation, and catalog key additions. |
-| `playwright.config.ts`, root E2E scripts, database reset | QA/Security + Integration | Keep a single coordinated reset/startup contract on ports 3001/5001. |
+| `playwright.config.ts`, root E2E scripts, database reset | QA/Security + Integration | Keep a single coordinated reset/startup contract on ports 3001/5002. |
 | `docs/api-contract.md` | Project lead/architect | Frozen. No workstream changes it; a discovered discrepancy follows its explicit change process before code changes. |
 
 ## Detailed Delivery Plan
@@ -205,7 +205,7 @@ After foundation and contract review, Database/Data and the Frontend UI shell ma
 
 ### 5. Integration/Production Readiness
 
-- Provide repeatable install/test/lint/build/start scripts in package manifests and root E2E orchestration; keep dev on 3000/5000 and test on 3001/5001.
+- Provide repeatable install/test/lint/build/start scripts in package manifests and root E2E orchestration; keep dev on 3000/5001 and test on 3001/5002.
 - Provide an environment example documenting database path, allowed origin, optional Telegram credentials, and host timezone without real values.
 - Ensure startup logs operationally useful, redacted records for start/shutdown/mutation/failure; fail clearly for unsafe required configuration and warn for incomplete optional notification configuration.
 - Validate clean installation, all available checks, production client build, server startup, E2E web servers, data persistence, and git secret/data hygiene before release.

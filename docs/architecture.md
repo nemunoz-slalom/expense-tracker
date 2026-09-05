@@ -10,6 +10,19 @@ The pattern is chosen for its simplicity: it isolates concerns into a small numb
 
 ---
 
+## Local Development Entry Points
+
+The root package delegates startup to each application package, so developers do not need to change directories:
+
+```bash
+npm run start:server
+npm run start:client
+```
+
+The backend reads its runtime variables from `server/.env` when started through the root command. The frontend reads `REACT_APP_API_URL` from `client/.env`. The API enables CORS only for the origin configured by the backend's `CLIENT_ORIGIN`.
+
+---
+
 ## Guiding Principles
 
 - **Separation of concerns.** Each layer has one responsibility and does not spill into the others. Route handlers do not run SQL; components do not call `fetch` directly; repositories do not talk to Telegram.
@@ -206,7 +219,7 @@ Types define the shape of every object crossing a boundary: request bodies, resp
 - **`client/src/styles/`** — global Tailwind layers and Dracula semantic color tokens.
 - **`client/tailwind.config.js`** and **`client/postcss.config.js`** — Tailwind/PostCSS configuration for canonical shadcn utilities.
 - **`client/craco.config.js`** — Create React App configuration for the `@/` alias in Webpack and Jest.
-- **`client/src/config/`** — runtime configuration read from `REACT_APP_*` environment variables. The API base URL defaults to `http://localhost:5000`.
+- **`client/src/config/`** — runtime configuration read from `REACT_APP_*` environment variables. The API base URL defaults to `http://localhost:5001`.
 - **`client/src/lib/`** — framework-independent UI helpers, including `cn` and date-key/display formatting.
 - **`client/src/App.tsx`** — root component composing the layout.
 

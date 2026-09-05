@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '../src/i18n';
 import App from '../src/App';
 import * as api from '../src/api/services.api';
+import { dateKey } from '../src/lib/date';
 
 jest.mock('../src/api/services.api');
 const mockedApi = api as jest.Mocked<typeof api>;
@@ -31,6 +32,19 @@ describe('service filters and list', () => {
     expect(await screen.findByText('CFE')).toBeTruthy();
     expect(mockedApi.listServices).toHaveBeenCalledWith({ month: currentMonth() });
     expect(screen.getByText('Overdue')).toBeTruthy();
+  });
+
+  it('formats list dates and labels a payment made today', async () => {
+    mockedApi.listServices.mockResolvedValue([{
+      ...service,
+      dueDate: '2026-09-25',
+      paymentDate: dateKey(new Date()),
+    }]);
+
+    render(<App />);
+
+    expect(await screen.findByText('Due date: Friday 25, Sep.')).toBeTruthy();
+    expect(screen.getByText('Payment date: Today')).toBeTruthy();
   });
 
   it('renders the service type filter with the current-month filter', async () => {

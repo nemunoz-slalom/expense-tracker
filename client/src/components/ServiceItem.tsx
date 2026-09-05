@@ -5,6 +5,7 @@ import { CircleAlert, CircleCheck, CircleDot, Clock3 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { dateKey, dateLabel } from '@/lib/date';
 import { ServiceResponse } from '@/types/services';
 
 interface ServiceItemProps {
@@ -32,9 +33,13 @@ export function ServiceItem({ service, onEdit, onPaid, onDelete }: ServiceItemPr
     <Badge variant="outline" className={`status-${service.status}`}><StatusIcon aria-hidden="true" size={16} /> {status}</Badge>
     <div>{formattedAmount}</div>
     <div>
-      <span>{t('service.dueDate')}: {service.dueDate}</span>
+      <span>{t('service.dueDate')}: {dateLabel(service.dueDate)}</span>
       {service.paymentDate && (
-        <span>{t('service.paymentDate')}: {service.paymentDate}</span>
+        <span>
+          {t('service.paymentDate')}: {service.paymentDate === dateKey(new Date())
+            ? t('service.today')
+            : dateLabel(service.paymentDate)}
+        </span>
       )}
     </div>
     <div className="service-actions">
