@@ -1,7 +1,7 @@
 import { dateFromKey, dateKey, dateLabel } from '../src/lib/date';
 
 describe('date utilities', () => {
-  it('formats selected dates for Spanish calendar triggers', () => {
+  it('formats selected dates for English calendar triggers', () => {
     expect(dateLabel('2026-09-08')).toBe('Tuesday 08, Sep.');
   });
 
