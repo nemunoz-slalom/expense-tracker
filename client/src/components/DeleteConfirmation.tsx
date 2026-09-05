@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -17,7 +18,17 @@ interface DeleteConfirmationProps {
 
 export function DeleteConfirmation({ serviceName, onOpenChange, onConfirm }: DeleteConfirmationProps): JSX.Element {
   const { t } = useTranslation();
-  return (
+  const lastActiveElementRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (serviceName) {
+      lastActiveElementRef.current = document.activeElement as HTMLElement | null;
+      return;
+    }
+
+    lastActiveElementRef.current?.focus();
+    lastActiveElementRef.current = null;
+  }, [serviceName]);
     <AlertDialog open={Boolean(serviceName)} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogTitle>{t('delete.title')}</AlertDialogTitle>
