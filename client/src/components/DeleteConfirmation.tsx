@@ -29,6 +29,8 @@ export function DeleteConfirmation({ serviceName, onOpenChange, onConfirm }: Del
     lastActiveElementRef.current?.focus();
     lastActiveElementRef.current = null;
   }, [serviceName]);
+
+  return (
     <AlertDialog open={Boolean(serviceName)} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogTitle>{t('delete.title')}</AlertDialogTitle>
