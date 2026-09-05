@@ -13,6 +13,7 @@ export interface UseServicesResult {
   create: (data: CreateServiceRequest) => Promise<ServiceResponse>;
   update: (id: number, data: UpdateServiceRequest) => Promise<ServiceResponse>;
   remove: (id: number) => Promise<void>;
+  notify: (id: number) => Promise<void>;
 }
 
 export function useServices(filters: ServiceFilters = defaultFilters): UseServicesResult {
@@ -51,6 +52,9 @@ export function useServices(filters: ServiceFilters = defaultFilters): UseServic
     await servicesApi.deleteService(id);
     await refresh();
   }, [refresh]);
+  const notify = useCallback(async (id: number) => {
+    await servicesApi.notifyService(id);
+  }, []);
 
-  return { services, isLoading, error, refresh, create, update, remove };
+  return { services, isLoading, error, refresh, create, update, remove, notify };
 }

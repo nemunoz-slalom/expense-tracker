@@ -6,9 +6,11 @@ import { DeleteConfirmation } from './components/DeleteConfirmation';
 import { DateFilterValue } from './components/DateFilter';
 import { FilterPanel } from './components/FilterPanel';
 import { ServiceList } from './components/ServiceList';
+import { UndoToast } from './components/UndoToast';
 import { Button } from './components/ui/Button';
 import { useServices } from './hooks/useServices';
 import { ToastProvider, useToasts } from './hooks/useToasts';
+import { useUndoTimer } from './hooks/useUndoTimer';
 import { CreateServiceRequest, ServiceFilters, ServiceResponse, ServiceType } from './types/services';
 
 function monthForOffset(offset: number): string {
@@ -33,14 +35,16 @@ function filtersFor(dateFilter: DateFilterValue, type?: ServiceType): ServiceFil
 
 function ServiceManager(): JSX.Element {
   const { t } = useTranslation();
-  const { success, error: showError } = useToasts();
+  const { success, error: showError, showUndo, dismiss } = useToasts();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ServiceResponse | null>(null);
+  const [restoredValues, setRestoredValues] = useState<CreateServiceRequest | null>(null);
   const [deleting, setDeleting] = useState<ServiceResponse | null>(null);
   const [dateFilter, setDateFilter] = useState<DateFilterValue>(defaultDateFilter);
   const [typeFilter, setTypeFilter] = useState<ServiceType | undefined>();
   const filters = useMemo(() => filtersFor(dateFilter, typeFilter), [dateFilter, typeFilter]);
-  const { services, isLoading, error, create, update, remove } = useServices(filters);
+  const { services, isLoading, error, create, update, remove, notify } = useServices(filters);
+  const { start, cancel } = useUndoTimer();
   const messageFor = (caught: unknown): string => caught instanceof Error ? caught.message : t('error.default');
   const save = async (data: CreateServiceRequest): Promise<void> => {
     try {
@@ -48,8 +52,34 @@ function ServiceManager(): JSX.Element {
         await update(editing.id, data);
         success(t('service.updated'));
       } else {
-        await create(data);
+        const service = await create(data);
         success(t('service.created'));
+        if (service.paymentDate) {
+          let toastId = 0;
+          const expiresAt = start(service.id, async () => {
+            dismiss(toastId);
+            try {
+              await notify(service.id);
+              success(t('undo.notificationRequested'));
+            } catch (caught) {
+              showError(messageFor(caught));
+            }
+          });
+          const undo = async (): Promise<void> => {
+            cancel(service.id);
+            dismiss(toastId);
+            try {
+              await remove(service.id);
+              setEditing(null);
+              setRestoredValues(data);
+              setFormOpen(true);
+              success(t('undo.restored'));
+            } catch (caught) {
+              showError(messageFor(caught));
+            }
+          };
+          toastId = showUndo(<UndoToast expiresAt={expiresAt} onUndo={() => void undo()} />);
+        }
       }
     } catch (caught) { showError(messageFor(caught)); }
   };
@@ -62,7 +92,7 @@ function ServiceManager(): JSX.Element {
   };
 
   return <main className="app-shell">
-    <header><h1>{t('app.title')}</h1><p>{t('app.subtitle')}</p><Button onClick={() => { setEditing(null); setFormOpen(true); }}>{t('service.create')}</Button></header>
+    <header><h1>{t('app.title')}</h1><p>{t('app.subtitle')}</p><Button onClick={() => { setEditing(null); setRestoredValues(null); setFormOpen(true); }}>{t('service.create')}</Button></header>
     <FilterPanel
       dateFilter={dateFilter}
       type={typeFilter}
@@ -72,7 +102,7 @@ function ServiceManager(): JSX.Element {
     />
     {error && <p role="alert">{error.message}</p>}
     <ServiceList services={services} isLoading={isLoading} isFiltered={Boolean(typeFilter) || dateFilter.mode !== 'allTime'} onEdit={(service) => { setEditing(service); setFormOpen(true); }} onPaid={(service) => void markPaid(service)} onDelete={setDeleting} />
-    <ServiceForm open={formOpen} service={editing} onOpenChange={setFormOpen} onSubmit={save} />
+    <ServiceForm open={formOpen} service={editing} initialValues={restoredValues} onOpenChange={setFormOpen} onSubmit={save} />
     <DeleteConfirmation serviceName={deleting?.name ?? null} onOpenChange={(open) => { if (!open) setDeleting(null); }} onConfirm={confirmDelete} />
   </main>;
 }
