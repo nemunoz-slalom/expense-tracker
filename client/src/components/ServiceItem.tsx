@@ -31,7 +31,16 @@ export function ServiceItem({ service, onEdit, onPaid, onDelete }: ServiceItemPr
     <div><strong>{service.name}</strong><span>{t(`service.type.${service.type}`)}</span></div>
     <Badge className={`status-${service.status}`}><StatusIcon aria-hidden="true" size={16} /> {status}</Badge>
     <div>{formattedAmount}</div>
-    <div><span>{t('service.dueDate')}</span>{service.dueDate}{service.paymentDate && <><span>{t('service.paymentDate')}</span>{service.paymentDate}</>}</div>
+    <div>
+      <span>{t('service.dueDate')}</span>
+      <span>{service.dueDate}</span>
+      {service.paymentDate && (
+        <>
+          <span>{t('service.paymentDate')}</span>
+          <span>{service.paymentDate}</span>
+        </>
+      )}
+    </div>
     <div className="service-actions">
       {!service.paid && <Button className="secondary" onClick={() => onPaid(service)}>{t('service.markPaid')}</Button>}
       <Button className="secondary" onClick={() => onEdit(service)}>{t('service.editAction')}</Button>
