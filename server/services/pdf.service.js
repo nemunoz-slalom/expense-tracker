@@ -21,9 +21,19 @@ function formatAmount(amount) {
 }
 
 function escapePdfText(value) {
-  return String(value)
-    .replace(/[\\()]/g, '\\$&')
-    .replace(/[^\x20-\x7E]/g, '?');
+  return Array.from(String(value)).map((character) => {
+    const codePoint = character.charCodeAt(0);
+    if (character === '\\' || character === '(' || character === ')') {
+      return `\\${character}`;
+    }
+    if (codePoint >= 0x20 && codePoint <= 0x7E) {
+      return character;
+    }
+    if (codePoint >= 0xA0 && codePoint <= 0xFF) {
+      return `\\${codePoint.toString(8).padStart(3, '0')}`;
+    }
+    return '?';
+  }).join('');
 }
 
 function createPdf(lines) {
