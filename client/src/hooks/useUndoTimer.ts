@@ -32,7 +32,9 @@ export function useUndoTimer(): UseUndoTimerResult {
     const timeout = window.setTimeout(() => {
       timers.current.delete(serviceId);
       setActiveTimers((current) => current.filter((timer) => timer.serviceId !== serviceId));
-      void onExpire();
+      Promise.resolve()
+        .then(() => onExpire())
+        .catch(() => undefined);
     }, UNDO_DURATION_MS);
 
     timers.current.set(serviceId, timeout);
