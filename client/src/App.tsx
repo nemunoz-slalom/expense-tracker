@@ -23,11 +23,11 @@ function filtersFor(dateFilter: DateFilterValue, type?: ServiceType): ServiceFil
   const filters: ServiceFilters = type ? { type } : {};
   if (dateFilter.mode === 'currentMonth') return { ...filters, month: monthForOffset(0) };
   if (dateFilter.mode === 'previousMonth') return { ...filters, month: monthForOffset(-1) };
-  if (dateFilter.mode === 'custom') return {
-    ...filters,
-    ...(dateFilter.from ? { from: dateFilter.from } : {}),
-    ...(dateFilter.to ? { to: dateFilter.to } : {}),
-  };
+  if (dateFilter.mode === 'custom') {
+    return dateFilter.from && dateFilter.to
+      ? { ...filters, from: dateFilter.from, to: dateFilter.to }
+      : filters;
+  }
   return filters;
 }
 
