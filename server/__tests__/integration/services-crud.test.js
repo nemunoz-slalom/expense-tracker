@@ -71,6 +71,33 @@ describe('Service CRUD HTTP integration', () => {
       .expect({ error: 'NotFoundError', message: 'Service not found' });
   });
 
+  test('lists services with filters and urgency ordering', async () => {
+    await request(app)
+      .post('/api/services')
+      .send(createRequest({ name: 'Overdue water', type: 'water', dueDate: '2026-09-01' }))
+      .expect(201);
+
+    await request(app)
+      .post('/api/services')
+      .send(createRequest({ name: 'Urgent water', type: 'water', dueDate: '2026-09-10' }))
+      .expect(201);
+
+    await request(app)
+      .post('/api/services')
+      .send(createRequest({ name: 'Normal water', type: 'water', dueDate: '2026-09-20' }))
+      .expect(201);
+
+    const list = await request(app)
+      .get('/api/services?type=water')
+      .expect(200);
+
+    expect(list.body.data.map(({ name, status }) => ({ name, status }))).toEqual([
+      { name: 'Overdue water', status: 'overdue' },
+      { name: 'Urgent water', status: 'urgent' },
+      { name: 'Normal water', status: 'normal' }
+    ]);
+  });
+
   test('rejects invalid input without persisting partial state', async () => {
     await request(app)
       .post('/api/services')

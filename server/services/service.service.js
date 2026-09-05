@@ -1,6 +1,6 @@
 const { NotFoundError } = require('./errors');
 const { localToday } = require('../utils/dates');
-const { projectService } = require('../utils/sorting');
+const { projectService, sortServices } = require('../utils/sorting');
 const { validateCreate, validateService, validateUpdate } = require('../utils/validation');
 
 function createServiceService(repository, clock = () => new Date()) {
@@ -13,6 +13,12 @@ function createServiceService(repository, clock = () => new Date()) {
       ? validateService(input)
       : validateCreate(input);
     return project(repository.create(service));
+  }
+
+  function list(filters = {}) {
+    const today = localToday(clock());
+    const services = repository.findAll(filters).map((service) => projectService(service, today));
+    return sortServices(services, today);
   }
 
   function getById(id) {
@@ -51,7 +57,7 @@ function createServiceService(repository, clock = () => new Date()) {
     }
   }
 
-  return { create, getById, remove, update };
+  return { create, getById, list, remove, update };
 }
 
 module.exports = { createServiceService };

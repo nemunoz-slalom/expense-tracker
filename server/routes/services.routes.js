@@ -1,10 +1,20 @@
 const express = require('express');
 
 const { parseIdentifier } = require('../utils/dates');
+const { parseFilters } = require('../utils/filters');
 const { validateCreate, validateUpdate } = require('../utils/validation');
 
 function createServicesRouter(serviceService) {
   const router = express.Router();
+
+  router.get('/', (request, response, next) => {
+    try {
+      const filters = parseFilters(request.query);
+      response.json({ data: serviceService.list(filters) });
+    } catch (error) {
+      next(error);
+    }
+  });
 
   router.post('/', (request, response, next) => {
     try {
