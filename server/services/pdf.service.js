@@ -29,7 +29,7 @@ function escapePdfText(value) {
     if (codePoint >= 0x20 && codePoint <= 0x7E) {
       return character;
     }
-    if (codePoint >= 0xA0 && codePoint <= 0xFF) {
+    if (codePoint >= 0x80 && codePoint <= 0xFF) {
       return `\\${codePoint.toString(8).padStart(3, '0')}`;
     }
     return '?';

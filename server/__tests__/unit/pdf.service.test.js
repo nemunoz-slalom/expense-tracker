@@ -52,4 +52,16 @@ describe('PDF report service', () => {
     expect(text).toContain('Services: 0 | Paid: 0 | Pending: 0');
     expect(text).toContain('No services match the selected filters.');
   });
+
+  test('preserves Latin-1 characters with PDF octal escapes and replaces unsupported characters', () => {
+    const serviceService = {
+      list: jest.fn(() => [
+        createService({ name: 'Café \u0080 😀' })
+      ])
+    };
+    const pdf = createPdfService(serviceService).render({});
+    const text = pdf.toString('ascii');
+
+    expect(text).toContain('Caf\\351 \\200 ?');
+  });
 });
