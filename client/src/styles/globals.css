@@ -23,6 +23,10 @@
     --border: 225 27% 51%;
     --input: 225 27% 51%;
     --ring: 191 97% 77%;
+    --status-overdue: 0 100% 67%;
+    --status-due-soon: 31 100% 71%;
+    --status-upcoming: 191 97% 77%;
+    --status-paid: 135 94% 65%;
     --radius: .5rem;
   }
 
@@ -47,34 +51,69 @@
   .field-error { @apply mt-1 text-sm text-destructive; }
 
   .filter-panel {
-    @apply mb-6 grid items-end gap-4 rounded-lg border border-border bg-card/60 p-4;
+    @apply mb-6 rounded-lg border border-border bg-card/60 p-4;
+  }
+
+  .filter-panel-content {
+    @apply grid items-end gap-4;
     grid-template-columns: minmax(12rem, 1fr) minmax(12rem, 1fr) auto;
   }
 
-  .custom-date-range { @apply mt-3 grid grid-cols-2 gap-2; }
+  .custom-date-range { @apply mt-3 grid grid-cols-1 gap-2; }
+  .filter-panel-custom-range { grid-column: 1; grid-row: 2; }
   .date-button { @apply w-full justify-start border-input bg-background font-normal text-foreground; }
+  button.calendar-day-today[aria-selected='true'] { border-radius: var(--radius) !important; }
 
   .service-list { @apply grid gap-3; }
 
   .service-item {
     @apply grid items-center gap-4 rounded-lg border border-border bg-card p-4 shadow-sm transition-colors hover:border-muted-foreground hover:bg-secondary;
     grid-template-columns: minmax(12rem, 1fr) auto minmax(7rem, auto) minmax(7rem, auto) auto;
+    grid-template-areas: 'details status amount dates actions';
   }
+
+  .service-details { grid-area: details; }
+  .service-status { grid-area: status; @apply justify-self-start; }
+  .service-amount { grid-area: amount; }
+  .service-dates { grid-area: dates; }
+  .service-actions { grid-area: actions; }
 
   .service-item strong { @apply text-sm font-semibold; }
   .service-item span { @apply block text-sm text-muted-foreground; }
 
-  .status-overdue { @apply border-red-400/50 bg-red-400/15 text-red-300; }
-  .status-urgent { @apply border-yellow-200/50 bg-yellow-200/15 text-yellow-100; }
-  .status-normal { @apply border-cyan-200/50 bg-cyan-200/15 text-cyan-200; }
-  .status-paid { @apply border-green-300/50 bg-green-300/15 text-green-300; }
+  .status-overdue {
+    border-color: hsl(var(--status-overdue) / .5) !important;
+    background-color: hsl(var(--status-overdue) / .15) !important;
+    color: hsl(var(--status-overdue)) !important;
+  }
+  .status-urgent {
+    border-color: hsl(var(--status-due-soon) / .5) !important;
+    background-color: hsl(var(--status-due-soon) / .15) !important;
+    color: hsl(var(--status-due-soon)) !important;
+  }
+  .status-normal {
+    border-color: hsl(var(--status-upcoming) / .5) !important;
+    background-color: hsl(var(--status-upcoming) / .15) !important;
+    color: hsl(var(--status-upcoming)) !important;
+  }
+  .status-paid {
+    border-color: hsl(var(--status-paid) / .5) !important;
+    background-color: hsl(var(--status-paid) / .15) !important;
+    color: hsl(var(--status-paid)) !important;
+  }
 }
 
 @media (max-width: 767px) {
   .app-shell { width: min(100% - 1rem, 1100px); @apply py-6; }
-  .filter-panel { @apply grid-cols-1; }
-  .service-item { @apply grid-cols-[1fr_auto]; }
-  .service-item > :nth-child(3), .service-item > :nth-child(4), .service-actions { @apply col-span-full; }
+  .filter-panel-content { @apply grid-cols-1; }
+  .service-item {
+    @apply grid-cols-[1fr_auto];
+    grid-template-areas:
+      'details status'
+      'amount amount'
+      'dates dates'
+      'actions actions';
+  }
   .service-actions { @apply justify-start; }
 }
 

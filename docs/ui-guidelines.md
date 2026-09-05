@@ -56,10 +56,10 @@ The app uses the defined color palette. Do not substitute or introduce off-palet
 - **Highlight/secondary accent:** `#ff79c6` for optional highlights (e.g., active filter chip, selected chart bar).
 
 **Status**
-- **Overdue (🔴 OVERDUE):** `#ff5555` — high urgency, immediate action needed.
-- **Due within 7 days (🟡 DUE SOON):** `#f1fa8c` — medium urgency, approaching deadline.
-- **Normal (⚪ NORMAL):** `#8be9fd` — low urgency, future deadline.
-- **Paid (✅ PAID):** `#50fa7b` — completed status.
+- **Overdue:** `#ff5555` — high urgency, immediate action needed.
+- **Due within 7 days:** `#ffb86c` — medium urgency, approaching deadline.
+- **Normal:** `#8be9fd` — low urgency, future deadline.
+- **Paid:** `#50fa7b` — completed status.
 - **Info (optional):** `#ffb86c` for informational callouts or non-critical warnings.
 - **Error/destructive:** `#ff5555` for delete actions and validation errors (shared with overdue color).
 
@@ -212,10 +212,10 @@ Full-width shadcn `Table` with alternating row backgrounds (`#282a36` and `#4447
 |---|------------|--------------|-----------|------------|
 | 1 | Name | Service name (plain text, font-weight 500) | Left | flex-grow, min 120px |
 | 2 | Type | Service type label (Electricity, Gas, Internet, Mobile, Water) | Left | ~100px |
-| 3 | Amount | `$X,XXX.XX` or "—" if not set | Right | ~100px |
-| 4 | Payment | `MMM DD` (e.g., "Sep 15") or "—" if not set | Center | ~90px |
-| 5 | Due | `MMM DD` (e.g., "Sep 20") | Center | ~90px |
-| 6 | Status | `Badge` component (OVERDUE / DUE SOON / NORMAL / PAID) | Center | ~110px |
+| 3 | Status | `Badge` component (OVERDUE / DUE SOON / UPCOMING / PAID) | Center | ~110px |
+| 4 | Amount | `$ X,XXX.XX` or "—" if not set | Right | ~100px |
+| 5 | Payment | `MMM DD` (e.g., "Sep 15") or "—" if not set | Center | ~90px |
+| 6 | Due | `MMM DD` (e.g., "Sep 20") | Center | ~90px |
 | 7 | Actions | Action buttons (see below) | Right | ~160px |
 
 **Actions column layout:**
@@ -240,10 +240,10 @@ Paid bill:
 ```
 | Name    | Type        | Amount   | Payment | Due    | Status      | Actions              |
 |---------|-------------|----------|---------|--------|-------------|----------------------|
-| CFE     | Electricity | $450.00  | Sep 15  | Sep 05 | 🔴 OVERDUE  | [Mark as paid]   [⋮] |
-| Claro   | Mobile      | $299.00  | —       | Sep 20 | 🟡 DUE SOON | [Mark as paid]   [⋮] |
-| Telmex  | Internet    | $589.00  | Sep 01  | Sep 25 | ✅ PAID     |                  [⋮] |
-| Naturgy | Gas         | —        | —       | Oct 15 | ⚪ NORMAL   | [Mark as paid]   [⋮] |
+| CFE     | Electricity | $ 450.00 | Sep 15  | Sep 05 | OVERDUE    | [Mark as paid]   [⋮] |
+| Claro   | Mobile      | $ 299.00 | —       | Sep 20 | DUE SOON   | [Mark as paid]   [⋮] |
+| Telmex  | Internet    | $ 589.00 | Sep 01  | Sep 25 | PAID       |                  [⋮] |
+| Naturgy | Gas         | —        | —       | Oct 15 | UPCOMING   | [Mark as paid]   [⋮] |
 ```
 
 #### Card View (mobile <768px)
@@ -254,25 +254,25 @@ Each bill renders as a shadcn `Card` with the defined Surface (`#44475a`) backgr
 
 ```
 ┌─────────────────────────────────┐
-│ CFE                   🔴OVERDUE │  ← CardHeader: name (left, font-weight 600) + Badge (right)
-│ Electricity · $450.00           │  ← CardContent line 1: type + amount (or "—")
+│ CFE                     OVERDUE │  ← CardHeader: name (left, font-weight 600) + Badge (right)
+│ Electricity · $ 450.00          │  ← CardContent line 1: type + amount (or "—")
 │ Due: Sep 05 · Paid: Sep 15      │  ← CardContent line 2: dates
 │                [Mark as paid] [⋮]│  ← CardFooter: actions (flex justify-end)
 └─────────────────────────────────┘
 ```
 
 - **CardHeader:** Service name left-aligned (font-weight 600, `text-primary`), status `Badge` right-aligned.
-- **CardContent line 1:** Type and amount joined by " · ". Amount formatted `$X,XXX.XX`; shows "—" if not set.
+- **CardContent line 1:** Type and amount joined by " · ". Amount formatted `$ X,XXX.XX`; shows "—" if not set.
 - **CardContent line 2:** "Due: MMM DD" always shown. " · Paid: MMM DD" appended only when payment date exists; otherwise omitted entirely (not shown as "—").
 - **CardFooter:** Actions right-aligned, same flex layout as table: "Mark as paid" (if unpaid) + kebab ⋮ (always rightmost).
 - Padding: 12px–16px inside card.
 
 #### Status Badges
 - **OVERDUE:** Red background (`#ff5555`), white text, rounded corners (border-radius 4px–8px).
-- **DUE SOON:** Yellow background (`#f1fa8c`), dark text (`#282a36`), rounded corners.
+- **DUE SOON:** Orange background (`#ffb86c`), dark text (`#282a36`), rounded corners.
 - **NORMAL:** Cyan background (`#8be9fd`), dark text, rounded corners.
 - **PAID:** Green background (`#50fa7b`), dark text, rounded corners.
-- Include emoji or icon (🔴, 🟡, ⚪, ✅) plus text label for accessibility (color is never the sole indicator).
+- Include a text label for accessibility; color is never the sole indicator.
 - Padding: 4px–8px, font-size 12px–14px, font-weight 600.
 
 ### Modals and Dialogs
@@ -444,7 +444,7 @@ When the user creates a bill, the modal closes immediately, the bill appears in 
 
 #### Mark as Paid
 - Button disabled during API call (spinner visible).
-- On success: Badge changes to ✅ PAID, row may slide or reorder.
+- On success: Badge changes to PAID, row may slide or reorder.
 - Toast: "✅ Paid".
 - On error: Toast with error detail, button re-enabled.
 
@@ -596,10 +596,10 @@ The following 18 canonical shadcn/ui primitives are maintained in `client/src/co
 | Component | Where Used | Configuration |
 |-----------|------------|---------------|
 | `Dialog` | Create bill modal, Edit bill modal | `DialogHeader` + `DialogTitle` + `DialogDescription` + form fields + `DialogFooter` with Save/Cancel buttons |
-| `Input` | "Service name" field, "Amount" field (type=number, step=0.01) | Always paired with `Label` |
+| `Input` | "Service name" field; "Amount" field (currency-formatted text input with decimal keypad) | Always paired with `Label` |
 | `Label` | Every form field | Persistent visible label above each input |
 | `Select` | "Service type" in bill form (Electricity, Gas, Internet, Mobile, Water); "Type" filter in filter panel (All + 5 types) | `SelectTrigger` + `SelectContent` + `SelectItem` per option |
-| `Calendar` | "Due date", "Payment date", "Start date", and "End date" pickers (single mode) | Wrapped in `Popover`; closes on selection |
+| `Calendar` | "Due date" and "Payment date" pickers (single mode), plus the custom date-range picker (range mode) | Wrapped in `Popover`; closes on selection |
 | `Popover` | Wraps each Calendar date picker in the form and date filter | `PopoverTrigger` (button or text) + `PopoverContent` |
 
 #### Data Display
@@ -607,7 +607,7 @@ The following 18 canonical shadcn/ui primitives are maintained in `client/src/co
 |-----------|------------|---------------|
 | `Table` | Bill list on desktop/tablet (≥768px) | `TableHeader` + `TableBody` + `TableRow` + `TableHead` + `TableCell`. 7 columns in order: Name, Type, Amount, Payment Date, Due Date, Status, Actions. Alternating row backgrounds. |
 | `Card` | Bill item on mobile (<768px); chart container; filter panel container | `CardHeader` + `CardContent` + `CardFooter` |
-| `Badge` | Status indicator per bill | 4 custom variants: `overdue` (Red #ff5555), `urgent` (Yellow #f1fa8c, dark text), `normal` (Cyan #8be9fd, dark text), `paid` (Green #50fa7b, dark text) |
+| `Badge` | Status indicator per bill | 4 custom variants: `overdue` (Red #ff5555), `urgent` (Orange #ffb86c, dark text), `normal` (Cyan #8be9fd, dark text), `paid` (Green #50fa7b, dark text) |
 | `Separator` | Visual divider between filter panel and bill list | Horizontal rule |
 
 #### Actions & Menus
@@ -635,11 +635,11 @@ Each feature component in `client/src/components/` composes the primitives above
 
 - **App.tsx** — Sonner `<Toaster />` provider, layout: header + `FilterPanel` + `ServiceList` + `ConsumptionByPeriodChart` (conditional).
 - **FilterPanel.tsx** — `DateFilter` + `TypeFilter` + `Button` (Export PDF, outline) + `Button` (+ New bill, default). Wrapped in a `Card` or `div`.
-- **DateFilter.tsx** — preset `Select` plus two `Popover` > single-mode `Calendar` controls for Custom range start and end dates.
+- **DateFilter.tsx** — preset `Select` plus one `Popover` > range-mode `Calendar` for Custom range.
 - **TypeFilter.tsx** — `Select` with All + 5 service type options.
-- **ServiceForm.tsx** — `Dialog` > `Label` + `Input` (name) + `Select` (type) + `Input` (amount, type=number) + `Popover` > `Calendar` (due date) + `Popover` > `Calendar` (optional payment date with inline clear action) + `DialogFooter` > `Button` (Save, disabled until valid) + `Button` (Cancel).
+- **ServiceForm.tsx** — `Dialog` > `Label` + `Input` (name) + `Select` (type) + currency-formatted `Input` (amount, text input with decimal keypad) + `Popover` > `Calendar` (due date) + `Popover` > `Calendar` (optional payment date with inline clear action) + `DialogFooter` > `Button` (Save, disabled until valid) + `Button` (Cancel).
 - **ServiceList.tsx** — `Table` (≥768px) or `Card` list (<768px) + `Skeleton` (loading). Maps `ServiceItem` per row/card.
-- **ServiceItem.tsx** — Desktop: `TableRow` > 7 × `TableCell` in order: name, type, amount (right-aligned, "$X,XXX.XX" or "—"), payment date ("MMM DD" or "—"), due date ("MMM DD"), status (`Badge`), actions (flex justify-end: `Button` Mark as paid + `DropdownMenu` ⋮, kebab always rightmost). Mobile: `Card` > `CardHeader` (name left + `Badge` right) + `CardContent` (type · amount, due · paid) + `CardFooter` (actions right-aligned, same kebab-rightmost rule).
+- **ServiceItem.tsx** — Desktop: `TableRow` > 7 × `TableCell` in order: name, type, status (`Badge`), amount (right-aligned, "$ X,XXX.XX" or "—"), payment date ("MMM DD" or "—"), due date ("MMM DD"), actions (flex justify-end: `Button` Mark as paid + `DropdownMenu` ⋮, kebab always rightmost). Mobile: `Card` > `CardHeader` (name left + `Badge` right) + `CardContent` (type · amount, due · paid) + `CardFooter` (actions right-aligned, same kebab-rightmost rule).
 - **DeleteConfirmation.tsx** — `AlertDialog` > title + body (name + type) + `AlertDialogAction` (Confirm, destructive) + `AlertDialogCancel` (Cancel).
 - **UndoToast.tsx** — Sonner custom toast > message + `Progress` (8s) + `Button` (Undo, outline).
 - **ConsumptionByPeriodChart.tsx** — `Card` > `CardHeader` (title) + `CardContent` > `ChartContainer` + `BarChart` + `Bar` + `XAxis` + `YAxis` + `ChartTooltip`.

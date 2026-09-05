@@ -40,10 +40,10 @@ The user shall be able to view all bills or filtered subsets of bills.
 
 ### FR-3: Sort bills by urgency
 The app shall automatically sort bills by urgency without user action.
-- Overdue bills (due date < today) shall appear first with a red badge (🔴 OVERDUE).
-- Bills due within 7 days (today ≤ due date ≤ today + 7 days) shall appear second with a yellow badge (🟡 DUE SOON).
-- Other bills (due date > today + 7 days) shall appear third with a gray badge (⚪ NORMAL).
-- Paid bills shall always appear last with a green badge (✅ PAID), regardless of due-date urgency.
+- Overdue bills (due date < today) shall appear first with a red OVERDUE badge.
+- Bills due within 7 days (today ≤ due date ≤ today + 7 days) shall appear second with an orange DUE SOON badge.
+- Other bills (due date > today + 7 days) shall appear third with a cyan UPCOMING badge.
+- Paid bills shall always appear last with a green PAID badge, regardless of due-date urgency.
 - Within each urgency group, bills shall be sorted by due date in ascending order (soonest first).
 - Bills with the same due date shall use their unique identifier as a deterministic tie-breaker.
 - The sorting shall be applied whenever the bill list is loaded, refreshed, or updated.
@@ -60,7 +60,7 @@ The user shall be able to edit the service name, type, amount, payment date, due
 ### FR-5: Mark a bill as paid
 The user shall be able to change a bill's status from unpaid to paid.
 - The app shall update the paid status to true.
-- After marking as paid, the bill shall display a green ✅ PAID badge.
+- After marking as paid, the bill shall display a green PAID badge.
 - Marking an unpaid bill as paid shall set `paymentDate` to today on the backend, regardless of any payment date supplied in the same paid-transition request, and automatically trigger a Telegram notification (see FR-8).
 - Marking a bill as paid shall not affect other bills.
 - The user shall be able to view which bills are paid and which are unpaid.
@@ -97,7 +97,7 @@ The app shall send automatic Telegram notifications in two scenarios.
 ### FR-9: Date filter
 The app shall provide a single date-filter control with four presets and an optional custom range.
 - Default on load: "This month" (day 1 through last day of the current month).
-- Preset options: "This month", "Last month", "Custom range..." (opens Start date and End date single-date calendars), "All time".
+- Preset options: "This month", "Last month", "Custom range..." (opens a single range-selection calendar), "All time".
 - Trigger text adapts: month name for full months, date range for custom, "All time" when cleared.
 - Selecting any option shall filter the bill list by due date in the corresponding date range. This ensures unpaid bills remain visible in the default current-month view.
 - The filtered list shall remain sorted by urgency (per FR-3).

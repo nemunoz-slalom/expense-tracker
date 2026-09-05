@@ -16,7 +16,7 @@ We are building a web app to manage recurring utility bills (electricity, gas, i
   - `dueDate`: required ISO `YYYY-MM-DD`, must be `>= paymentDate` when both are present
   - `amount`: optional decimal number (bill total in MXN, e.g., 450.50)
   - `paid`: boolean, defaults to `false`
-- **Date filter**: A single dropdown with four presets — "This month" (default on load), "Last month", "Custom range..." (opens Start date and End date single-date calendars), and "All time". The trigger text adapts: full month name when a whole month is selected, date range when custom, "All time" when cleared.
+- **Date filter**: A single dropdown with four presets — "This month" (default on load), "Last month", "Custom range..." (opens one range-selection calendar), and "All time". The trigger text adapts: full month name when a whole month is selected, date range when custom, "All time" when cleared.
 - **Smart sorting by urgency**: Bills displayed in this order:
   - Overdue first (`dueDate < today`)
   - Then urgent (`dueDate` within next 7 days)
@@ -24,10 +24,10 @@ We are building a web app to manage recurring utility bills (electricity, gas, i
   - Within each group, sorted by `dueDate` ascending
   - Ties broken by bill `id` (deterministic)
 - **Status badges**: Visual indicators in every list view:
-  - 🔴 OVERDUE (overdue)
-  - 🟡 DUE SOON (urgent)
-  - ⚪ NORMAL
-  - ✅ PAID
+  - OVERDUE (overdue)
+  - DUE SOON (urgent)
+  - UPCOMING
+  - PAID
 - **Mark as paid**: Single-click action; changes bill status and triggers immediate Telegram notification.
 - **Telegram notifications**:
   - On create with payment date filled: bill is saved immediately and an Undo toast appears with an 8-second countdown. If the user clicks "Undo" within that window, the bill is deleted and the form reopens with the previous values. If the countdown expires, the notification is sent and the bill remains.

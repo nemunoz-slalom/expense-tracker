@@ -1,5 +1,7 @@
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { DateRange } from 'react-day-picker';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -22,66 +24,77 @@ interface DateFilterProps {
 
 export function DateFilter({ value, onChange }: DateFilterProps): JSX.Element {
   const { t } = useTranslation();
+  const shouldReduceMotion = useReducedMotion();
   const dateRangeLabelId = useId();
-  const [fromCalendarOpen, setFromCalendarOpen] = useState(false);
-  const [toCalendarOpen, setToCalendarOpen] = useState(false);
+  const [rangeCalendarOpen, setRangeCalendarOpen] = useState(false);
+  const [pendingRange, setPendingRange] = useState<DateRange>();
+  const [isSelectingNewRange, setIsSelectingNewRange] = useState(false);
   const setMode = (mode: DateFilterMode): void => onChange({ ...value, mode });
-  const handleFromChange = (from: string): void => {
-    const nextTo = value.to && from > value.to ? from : value.to;
-    onChange({ ...value, from, to: nextTo });
-  };
-  const handleToChange = (to: string): void => {
-    const rangeWasInvalid = Boolean(value.from && to < value.from);
-    const nextFrom = rangeWasInvalid ? to : value.from;
-    onChange({ ...value, from: nextFrom, to });
+  const setRangeOpen = (nextOpen: boolean): void => {
+    if (nextOpen) {
+      const from = dateFromKey(value.from);
+      const to = dateFromKey(value.to);
+      setPendingRange(from ? { from, to } : undefined);
+      setIsSelectingNewRange(true);
+    }
+    setRangeCalendarOpen(nextOpen);
   };
 
   return (
-    <div className="filter-field">
-      <label id={dateRangeLabelId}>{t('filter.dateRange')}</label>
-      <Select value={value.mode} onValueChange={(mode) => setMode(mode as DateFilterMode)}>
-        <SelectTrigger aria-label={t('filter.dateRange')} aria-labelledby={dateRangeLabelId}><SelectValue /></SelectTrigger>
-        <SelectContent>
-          <SelectItem value="currentMonth">{t('filter.currentMonth')}</SelectItem>
-          <SelectItem value="previousMonth">{t('filter.previousMonth')}</SelectItem>
-          <SelectItem value="custom">{t('filter.customRange')}</SelectItem>
-          <SelectItem value="allTime">{t('filter.allTime')}</SelectItem>
-        </SelectContent>
-      </Select>
-      {value.mode === 'custom' && (
-        <div className="custom-date-range">
-          <Popover open={fromCalendarOpen} onOpenChange={setFromCalendarOpen}>
+    <>
+      <div className="filter-field">
+        <label id={dateRangeLabelId}>{t('filter.dateRange')}</label>
+        <Select value={value.mode} onValueChange={(mode) => setMode(mode as DateFilterMode)}>
+          <SelectTrigger aria-label={t('filter.dateRange')} aria-labelledby={dateRangeLabelId}><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="currentMonth">{t('filter.currentMonth')}</SelectItem>
+            <SelectItem value="previousMonth">{t('filter.previousMonth')}</SelectItem>
+            <SelectItem value="custom">{t('filter.customRange')}</SelectItem>
+            <SelectItem value="allTime">{t('filter.allTime')}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <AnimatePresence initial={false}>
+        {value.mode === 'custom' && (
+          <motion.div
+            className="custom-date-range filter-panel-custom-range"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 2 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0, y: 2 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, ease: 'easeInOut' }}
+          >
+          <Popover open={rangeCalendarOpen} onOpenChange={setRangeOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="date-button" aria-label={t('filter.startDate')}>
-                {value.from ? dateLabel(value.from) : t('filter.startDate')}
+              <Button variant="outline" className="date-button" aria-label={t('filter.selectDateRange')}>
+                {value.from && value.to
+                  ? t('filter.selectedDateRange', { from: dateLabel(value.from), to: dateLabel(value.to) })
+                  : t('filter.selectDateRange')}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={dateFromKey(value.from)} onSelect={(date) => {
-                if (date) {
-                  handleFromChange(dateKey(date));
-                  setFromCalendarOpen(false);
-                }
-              }} initialFocus />
+              <Calendar
+                mode="range"
+                selected={pendingRange}
+                onSelect={(range, selectedDay) => {
+                  if (isSelectingNewRange) {
+                    setPendingRange({ from: selectedDay });
+                    setIsSelectingNewRange(false);
+                    return;
+                  }
+
+                  setPendingRange(range);
+                  if (range?.from && range.to) {
+                    onChange({ ...value, from: dateKey(range.from), to: dateKey(range.to) });
+                    setRangeCalendarOpen(false);
+                  }
+                }}
+                initialFocus
+              />
             </PopoverContent>
           </Popover>
-          <Popover open={toCalendarOpen} onOpenChange={setToCalendarOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="date-button" aria-label={t('filter.endDate')}>
-                {value.to ? dateLabel(value.to) : t('filter.endDate')}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={dateFromKey(value.to)} onSelect={(date) => {
-                if (date) {
-                  handleToChange(dateKey(date));
-                  setToCalendarOpen(false);
-                }
-              }} initialFocus />
-            </PopoverContent>
-          </Popover>
-        </div>
-      )}
-    </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
