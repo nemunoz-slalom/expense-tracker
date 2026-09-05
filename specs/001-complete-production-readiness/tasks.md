@@ -139,8 +139,8 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 
 - [X] T046 [P] [US3] Write creation and paid message formatting plus false-to-true transition-guard unit tests in `server/__tests__/unit/notification.service.test.js`
 - [X] T047 [P] [US3] Write stubbed-Telegram notify, missing-service, missing-credential, delivery-failure, and duplicate-paid integration tests in `server/__tests__/integration/notifications.test.js`
-- [ ] T048 [P] [US3] Write fake-timer independent-window, cancel, expiry-once, and teardown tests in `client/__tests__/useUndoTimer.test.ts`
-- [ ] T049 [P] [US3] Write mocked-transport Undo form-restoration and notification-feedback integration tests in `client/__tests__/undo-notifications.test.tsx`
+- [X] T048 [P] [US3] Write fake-timer independent-window, cancel, expiry-once, and teardown tests in `client/__tests__/useUndoTimer.test.ts`
+- [X] T049 [P] [US3] Write mocked-transport Undo form-restoration and notification-feedback integration tests in `client/__tests__/undo-notifications.test.tsx`
 - [ ] T050 [P] [US3] Write the independent creation-Undo Chromium journey in `tests/e2e/undo-creation.spec.ts`
 
 ### Implementation for User Story 3
@@ -149,7 +149,7 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 - [X] T052 [US3] Implement creation and payment notification formatting and sending without timer ownership in `server/services/notification.service.js`
 - [X] T053 [US3] Trigger payment notification only after a successful false-to-true atomic transition in `server/services/service.service.js`
 - [X] T054 [US3] Implement application-notify endpoint delegation and no-notification DELETE behavior in `server/routes/services.routes.js`
-- [ ] T055 [US3] Implement local keyed timers, accessible Undo countdown feedback, restored form values, and toast actions in `client/src/hooks/useUndoTimer.ts`, `client/src/hooks/useToasts.ts`, `client/src/hooks/useServices.ts`, and `client/src/components/UndoToast.tsx`
+- [X] T055 [US3] Implement local keyed timers, accessible Undo countdown feedback, restored form values, and toast actions in `client/src/hooks/useUndoTimer.ts`, `client/src/hooks/useToasts.ts`, `client/src/hooks/useServices.ts`, and `client/src/components/UndoToast.tsx`
 
 **Checkpoint**: US3 has no backend creation timer, queue, schedule, or cancellation endpoint. Undo deletes without delivery; natural expiry requests exactly one notification; paid delivery is immediate only on the first false-to-true transition and cannot fail the saved mutation.
 

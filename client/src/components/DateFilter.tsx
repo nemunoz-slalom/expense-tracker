@@ -24,9 +24,9 @@ export function DateFilter({ value, onChange }: DateFilterProps): JSX.Element {
 
   return (
     <div className="filter-field">
-      <label id="date-range-label">{t('filter.dateRange')}</label>
+      <label>{t('filter.dateRange')}</label>
       <Select value={value.mode} onValueChange={(mode) => setMode(mode as DateFilterMode)}>
-        <SelectTrigger aria-labelledby="date-range-label"><SelectValue /></SelectTrigger>
+        <SelectTrigger aria-label={t('filter.dateRange')}><SelectValue /></SelectTrigger>
         <SelectContent>
           <SelectItem value="currentMonth">{t('filter.currentMonth')}</SelectItem>
           <SelectItem value="previousMonth">{t('filter.previousMonth')}</SelectItem>
@@ -53,7 +53,7 @@ export function DateFilter({ value, onChange }: DateFilterProps): JSX.Element {
               </Button>
             </PopoverTrigger>
             <PopoverContent>
-              <Calendar value={value.to} onSelect={(to) => onChange({ ...value, to })} />
+              <Calendar value={value.to} onSelect={(to) => onChange({ ...value, to: value.from && to < value.from ? value.from : to })} />
             </PopoverContent>
           </Popover>
         </div>
