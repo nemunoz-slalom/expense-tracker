@@ -112,16 +112,16 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 
 ### Tests for User Story 2
 
-- [ ] T037 [P] [US2] Write status grouping, due-date/id tie-breaker, and mixed-date-filter HTTP 400 unit tests in `server/__tests__/unit/list-selection.test.js`
-- [ ] T038 [P] [US2] Write real-SQLite month, inclusive-range, type, paid, malformed mixed-date-filter query, and ordered-list integration tests in `server/__tests__/integration/services-list.test.js`
+- [X] T037 [P] [US2] Write status grouping, due-date/id tie-breaker, and mixed-date-filter HTTP 400 unit tests in `server/__tests__/unit/list-selection.test.js`
+- [X] T038 [P] [US2] Write real-SQLite month, inclusive-range, type, paid, malformed mixed-date-filter query, and ordered-list integration tests in `server/__tests__/integration/services-list.test.js`
 - [ ] T039 [P] [US2] Write mocked-transport current-month, custom-calendar, type, empty-state, and localized status UI tests in `client/__tests__/filters-and-list.test.tsx`
 - [ ] T040 [P] [US2] Write the independent filtered-list and consumption-entry Chromium journey in `tests/e2e/filter-services.spec.ts`
 
 ### Implementation for User Story 2
 
 - [ ] T041 [US2] Serialize exactly one contract-supported date-filter mode, prevent mixed modes in the UI, and preserve returned order in `client/src/api/services.api.ts`
-- [ ] T042 [US2] Implement reusable filtered ordered Service selection for list consumers in `server/services/service.service.js`
-- [ ] T043 [US2] Delegate validated list query filters and preserve server ordering in `server/routes/services.routes.js`
+- [X] T042 [US2] Implement reusable filtered ordered Service selection for list consumers in `server/services/service.service.js`
+- [X] T043 [US2] Delegate validated list query filters and preserve server ordering in `server/routes/services.routes.js`
 - [ ] T044 [US2] Implement Calendar-in-Popover date presets and Select-based type filtering in `client/src/components/DateFilter.tsx` and `client/src/components/TypeFilter.tsx`
 - [ ] T045 [US2] Compose active filter state, priority status text/icons, and empty-result recovery in `client/src/components/FilterPanel.tsx`, `client/src/components/ServiceItem.tsx`, and `client/src/App.tsx`
 
