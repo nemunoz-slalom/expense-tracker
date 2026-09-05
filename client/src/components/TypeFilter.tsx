@@ -31,24 +31,3 @@ export function TypeFilter({ value, onChange }: TypeFilterProps): JSX.Element {
     </div>
   );
 }
-interface TypeFilterProps {
-  value?: ServiceType;
-  onChange: (value?: ServiceType) => void;
-}
-
-export function TypeFilter({ value, onChange }: TypeFilterProps): JSX.Element {
-  const { t } = useTranslation();
-
-  return (
-    <div className="filter-field">
-      <label>{t('filter.serviceType')}</label>
-      <Select value={value ?? 'all'} onValueChange={(nextValue) => onChange(nextValue === 'all' ? undefined : nextValue as ServiceType)}>
-        <SelectTrigger aria-label={t('filter.serviceType')}><SelectValue /></SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">{t('filter.allTypes')}</SelectItem>
-          {serviceTypes.map((type) => <SelectItem key={type} value={type}>{t(`service.type.${type}`)}</SelectItem>)}
-        </SelectContent>
-      </Select>
-    </div>
-  );
-}

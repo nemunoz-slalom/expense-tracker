@@ -33,9 +33,9 @@ function queryFor(filters: ServiceFilters): string {
   const params = new URLSearchParams();
   if (filters.month) {
     params.set('month', filters.month);
-  } else {
-    if (filters.from) params.set('from', filters.from);
-    if (filters.to) params.set('to', filters.to);
+  } else if (filters.from && filters.to) {
+    params.set('from', filters.from);
+    params.set('to', filters.to);
   }
   if (filters.type) params.set('type', filters.type);
   if (filters.paid !== undefined) params.set('paid', String(filters.paid));

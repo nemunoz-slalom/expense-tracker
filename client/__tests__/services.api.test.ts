@@ -22,6 +22,12 @@ describe('services API', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/services?month=2026-09');
   });
 
+  it('omits incomplete date ranges', async () => {
+    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify({ data: [service] }), { status: 200 }));
+    await listServices({ from: '2026-09-01' });
+    expect(fetchMock).toHaveBeenCalledWith('/api/services');
+  });
+
   it('uses contract CRUD methods and JSON request bodies', async () => {
     const fetchMock = jest.spyOn(global, 'fetch')
       .mockResolvedValueOnce(new Response(JSON.stringify({ data: service }), { status: 201 }))

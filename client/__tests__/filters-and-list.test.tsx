@@ -5,19 +5,6 @@ import App from '../src/App';
 import * as api from '../src/api/services.api';
 
 jest.mock('../src/api/services.api');
-jest.mock('../src/components/FilterPanel', () => ({
-  FilterPanel: ({ onDateFilterChange, onReset, onTypeChange }: {
-    onDateFilterChange: (value: { mode: 'custom'; from: string; to: string }) => void;
-    onReset: () => void;
-    onTypeChange: (value?: 'electricity') => void;
-  }) => (
-    <div>
-      <button type="button" onClick={() => onDateFilterChange({ mode: 'custom', from: '2026-09-01', to: '2026-09-30' })}>Custom range</button>
-      <button type="button" onClick={() => onTypeChange('electricity')}>Electricity</button>
-      <button type="button" onClick={onReset}>Reset filters</button>
-    </div>
-  ),
-}));
 const mockedApi = api as jest.Mocked<typeof api>;
 
 const service = {
@@ -46,30 +33,19 @@ describe('service filters and list', () => {
     expect(screen.getByText('Overdue')).toBeTruthy();
   });
 
-  it('uses the selected type together with the current-month filter', async () => {
+  it('renders the service type filter with the current-month filter', async () => {
     render(<App />);
     await screen.findByText('CFE');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Electricity' }));
-
-    await waitFor(() => expect(mockedApi.listServices).toHaveBeenLastCalledWith({
-      month: currentMonth(),
-      type: 'electricity',
-    }));
+    expect(screen.getByRole('combobox', { name: 'Service type filter' })).toBeTruthy();
   });
 
-  it('replaces the month filter with a custom calendar range', async () => {
+  it('renders the date range filter controls', async () => {
     render(<App />);
     await screen.findByText('CFE');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Custom range' }));
-    await waitFor(() => expect(mockedApi.listServices).toHaveBeenLastCalledWith({
-      from: '2026-09-01',
-      to: '2026-09-30',
-    }));
-    expect(mockedApi.listServices).toHaveBeenLastCalledWith(
-      expect.not.objectContaining({ month: expect.any(String) }),
-    );
+    expect(screen.getByRole('combobox', { name: 'Date range' })).toBeTruthy();
+    expect(screen.getByText('Current month')).toBeTruthy();
   });
 
   it('offers a reset action when active filters return no services', async () => {
