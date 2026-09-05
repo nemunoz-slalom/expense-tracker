@@ -12,8 +12,11 @@ function resolveDatabasePath(options = {}) {
     databasePath || (isTestEnvironment ? TEST_DATABASE : DEVELOPMENT_DATABASE)
   );
 
-  if (isTestEnvironment && resolvedDatabasePath === path.resolve(DEVELOPMENT_DATABASE)) {
-    throw new Error('Test environments must not use the development database.');
+  if (isTestEnvironment) {
+    const resolvedDevelopmentPath = path.resolve(DEVELOPMENT_DATABASE);
+    if (resolvedDatabasePath === resolvedDevelopmentPath || path.basename(resolvedDatabasePath) === DEVELOPMENT_DATABASE) {
+      throw new Error('Test environments must not use the development database.');
+    }
   }
 
   return resolvedDatabasePath;
