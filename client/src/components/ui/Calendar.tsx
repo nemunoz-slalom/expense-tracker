@@ -9,10 +9,17 @@ export interface CalendarProps {
 
 export function Calendar({ value, onSelect }: CalendarProps): JSX.Element {
   const days = useMemo(() => {
-    const start = new Date();
-    return Array.from({ length: 31 }, (_, index) => {
-      const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + index);
-      return date.toISOString().slice(0, 10);
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const length = new Date(year, month + 1, 0).getDate();
+
+    return Array.from({ length }, (_, index) => {
+      const date = new Date(year, month, index + 1);
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
     });
   }, []);
 
