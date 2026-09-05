@@ -9,7 +9,7 @@ function createApp({ serviceService, logger = createLogger(), clientOrigin }) {
   const app = express();
 
   app.use(express.json());
-  app.use(cors({ origin: clientOrigin }));
+  app.use(cors({ origin: clientOrigin || false }));
   app.use('/api/services', createServicesRouter(serviceService));
   app.use((error, request, response, next) => {
     void next;
