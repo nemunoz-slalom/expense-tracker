@@ -120,7 +120,8 @@ function createServiceRepository(database) {
   }
 
   function transaction(work, ...args) {
-    return database.transaction(work)(...args);
+    const executeTransaction = database.transaction(work);
+    return executeTransaction(...args);
   }
 
   return {

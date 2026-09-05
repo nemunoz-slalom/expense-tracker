@@ -26,6 +26,9 @@ describe('database foundation', () => {
     expect(() => resolveDatabasePath({
       environment: { DATABASE_PATH: 'services.db', NODE_ENV: 'test' }
     })).toThrow('Test environments must not use the development database.');
+    expect(() => resolveDatabasePath({
+      environment: { DATABASE_PATH: 'nested/services.db', NODE_ENV: 'test' }
+    })).toThrow('Test environments must not use the development database.');
   });
 
   test('maps repository records to domain objects and supports isolated resets', () => {
@@ -48,11 +51,20 @@ describe('database foundation', () => {
   test('enforces storage constraints and leaves failed transactions unchanged', () => {
     const repository = createServiceRepository(testDatabase.database);
 
+    const created = repository.transaction((name, type) => repository.create(
+      createServiceFixture({ name, type })
+    ), 'Transaction service', 'electricity');
+
+    expect(created).toMatchObject({
+      name: 'Transaction service',
+      type: 'electricity'
+    });
+
     expect(() => repository.transaction(() => {
       repository.create(createServiceFixture());
       repository.create(createServiceFixture({ name: 'Invalid type', type: 'other' }));
     })).toThrow();
-    expect(repository.findAll()).toEqual([]);
+    expect(repository.findAll()).toHaveLength(1);
   });
 
   test('records Telegram stub messages without contacting an external service', async () => {
