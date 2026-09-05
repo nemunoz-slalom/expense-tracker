@@ -46,6 +46,15 @@ function createServicesRouter(serviceService) {
     }
   });
 
+  router.post('/:id/notify', async (request, response, next) => {
+    try {
+      await serviceService.notify(parseIdentifier(request.params.id));
+      response.status(204).end();
+    } catch (error) {
+      next(error);
+    }
+  });
+
   router.delete('/:id', (request, response, next) => {
     try {
       serviceService.remove(parseIdentifier(request.params.id));

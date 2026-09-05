@@ -4,7 +4,9 @@ const { loadConfig } = require('./config/env');
 const { createDatabaseConnection } = require('./db/connection');
 const { migrateDatabase } = require('./db/migrate');
 const { createServiceRepository } = require('./repositories/service.repository');
+const { createTelegramClient } = require('./external/telegram.client');
 const { createApp } = require('./app');
+const { createNotificationService } = require('./services/notification.service');
 const { createServiceService } = require('./services/service.service');
 const { createLogger } = require('./utils/logger');
 
@@ -20,7 +22,9 @@ function createServer() {
   migrateDatabase({ databasePath: config.databasePath });
   const database = createDatabaseConnection({ databasePath: config.databasePath });
   const repository = createServiceRepository(database);
-  const serviceService = createServiceService(repository);
+  const telegramClient = createTelegramClient(config.telegram, logger);
+  const notificationService = createNotificationService(telegramClient, logger);
+  const serviceService = createServiceService(repository, undefined, notificationService);
   const app = createApp({ serviceService, logger });
 
   return { app, config, database, logger };

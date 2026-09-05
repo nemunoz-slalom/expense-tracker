@@ -3,7 +3,7 @@ const { localToday } = require('../utils/dates');
 const { projectService, sortServices } = require('../utils/sorting');
 const { validateCreate, validateService, validateUpdate } = require('../utils/validation');
 
-function createServiceService(repository, clock = () => new Date()) {
+function createServiceService(repository, clock = () => new Date(), notificationService) {
   function project(service) {
     return projectService(service, localToday(clock()));
   }
@@ -47,7 +47,20 @@ function createServiceService(repository, clock = () => new Date()) {
     if (!updated) {
       throw new NotFoundError();
     }
-    return project(updated);
+    const projected = project(updated);
+    if (paidTransition && notificationService) {
+      Promise.resolve()
+        .then(() => notificationService.sendPaid(projected))
+        .catch(() => undefined);
+    }
+    return projected;
+  }
+
+  async function notify(id) {
+    const service = getById(id);
+    if (notificationService) {
+      await notificationService.sendCreation(service);
+    }
   }
 
   function remove(id) {
@@ -57,7 +70,7 @@ function createServiceService(repository, clock = () => new Date()) {
     }
   }
 
-  return { create, getById, list, remove, update };
+  return { create, getById, list, notify, remove, update };
 }
 
 module.exports = { createServiceService };
