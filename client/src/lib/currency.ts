@@ -3,8 +3,12 @@ export function formatAmount(value: number): string {
 }
 
 export function normalizeAmountInput(value: string): string {
-  const [whole = '', ...fractionParts] = value.replace(/[^\d.]/g, '').split('.');
-  return fractionParts.length ? `${whole || '0'}.${fractionParts.join('').slice(0, 2)}` : whole;
+  const sanitizedValue = value.replace(/[^\d.]/g, '');
+  if (!sanitizedValue) return '';
+
+  const [whole = '', ...fractionParts] = sanitizedValue.split('.');
+  const normalizedWhole = whole || (sanitizedValue.startsWith('.') ? '0' : '');
+  return fractionParts.length ? `${normalizedWhole}.${fractionParts.join('').slice(0, 2)}` : normalizedWhole;
 }
 
 export function normalizeAmountEdit(value: string, previousValue: string): string {
@@ -26,8 +30,8 @@ export function formatAmountInput(value: string): string {
   const [whole = '', fraction = ''] = value.split('.');
   if (!whole && !fraction) return '$ ';
 
-  const formattedWhole = whole ? Number(whole).toLocaleString('en-US') : '';
-  return `$ ${formattedWhole}.${fraction.padEnd(2, '0')}`;
+  const formattedWhole = whole ? Number(whole).toLocaleString('en-US') : '0';
+  return `$ ${formattedWhole}.${fraction.padEnd(2, '0').slice(0, 2)}`;
 }
 
 export function integerCursorPosition(formattedValue: string, digitsBeforeCursor: number): number {

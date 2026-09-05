@@ -1,4 +1,4 @@
-import { formatAmountInput, normalizeAmountEdit } from '../src/lib/currency';
+import { formatAmountInput, normalizeAmountEdit, normalizeAmountInput } from '../src/lib/currency';
 
 describe('currency input', () => {
   it('uses a dollar prefix and space when the amount is empty', () => {
@@ -16,5 +16,10 @@ describe('currency input', () => {
 
   it('clears fractional digits without adding them to the integer amount', () => {
     expect(normalizeAmountEdit('$ 1,233', '1233.45')).toBe('1233');
+  });
+
+  it('normalizes leading decimals without leaving a blank whole number', () => {
+    expect(normalizeAmountInput('.5')).toBe('0.5');
+    expect(formatAmountInput('.5')).toBe('$ 0.50');
   });
 });

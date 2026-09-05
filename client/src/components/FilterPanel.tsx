@@ -47,9 +47,9 @@ export function FilterPanel({ dateFilter, type, onDateFilterChange, onTypeChange
     <motion.section
       className="filter-panel"
       aria-label={t('filter.title')}
-      animate={{ height: contentHeight ?? 'auto' }}
+      animate={contentHeight === undefined ? undefined : { height: contentHeight }}
       transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.32, ease: 'easeInOut' }}
-      style={{ overflow: 'hidden' }}
+      style={contentHeight === undefined ? undefined : { overflow: 'hidden' }}
     >
       <div ref={contentRef} className="filter-panel-content">
         <DateFilter value={dateFilter} onChange={onDateFilterChange} />
