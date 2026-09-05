@@ -29,7 +29,7 @@ function serviceUrl(path = ''): string {
   return `${apiBaseUrl}/api/services${path}`;
 }
 
-function queryFor(filters: ServiceFilters): string {
+export function serviceFilterQuery(filters: ServiceFilters): string {
   const params = new URLSearchParams();
   if (filters.month) {
     params.set('month', filters.month);
@@ -44,7 +44,7 @@ function queryFor(filters: ServiceFilters): string {
 }
 
 export async function listServices(filters: ServiceFilters = {}): Promise<ServiceResponse[]> {
-  const response = await fetch(serviceUrl(queryFor(filters)));
+  const response = await fetch(serviceUrl(serviceFilterQuery(filters)));
   const envelope = await parseResponse<Envelope<ServiceResponse[]>>(response);
   return envelope.data;
 }

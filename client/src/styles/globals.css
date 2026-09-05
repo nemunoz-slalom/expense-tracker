@@ -65,6 +65,9 @@
   button.calendar-day-today[aria-selected='true'] { border-radius: var(--radius) !important; }
 
   .service-list { @apply grid gap-3; }
+  .report-chart { @apply my-6 rounded-lg border border-border bg-card p-4; }
+  .report-chart h2 { @apply m-0 text-lg font-semibold; }
+  .report-chart p { @apply mt-1 text-muted-foreground; }
 
   .service-item {
     @apply grid items-center gap-4 rounded-lg border border-border bg-card p-4 shadow-sm transition-colors hover:border-muted-foreground hover:bg-secondary;
