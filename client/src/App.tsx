@@ -12,8 +12,8 @@ import { ToastProvider, useToasts } from './hooks/useToasts';
 import { CreateServiceRequest, ServiceFilters, ServiceResponse, ServiceType } from './types/services';
 
 function monthForOffset(offset: number): string {
-  const date = new Date();
-  date.setMonth(date.getMonth() + offset);
+  const now = new Date();
+  const date = new Date(now.getFullYear(), now.getMonth() + offset, 1);
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
