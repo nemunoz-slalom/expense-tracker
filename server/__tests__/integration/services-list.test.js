@@ -36,7 +36,7 @@ describe('Service list HTTP integration', () => {
       { name: 'August water', type: 'water', dueDate: '2026-08-31' },
       { name: 'September lower boundary', type: 'water', dueDate: '2026-09-01' },
       { name: 'September urgent first created', type: 'water', dueDate: '2026-09-10' },
-      { name: 'September urgent second created', type: 'water', dueDate: '2026-09-10' }
+      { name: 'September urgent second created', type: 'water', dueDate: '2026-09-10' },
       { name: 'September normal internet', type: 'internet', dueDate: '2026-09-30' },
       { name: 'October water', type: 'water', dueDate: '2026-10-01' }
     ];
@@ -63,8 +63,8 @@ describe('Service list HTTP integration', () => {
 
     expect(response.body.data.map(({ name, status }) => ({ name, status }))).toEqual([
       { name: 'September lower boundary', status: 'overdue' },
-      { name: 'September urgent higher id', status: 'urgent' },
-      { name: 'September urgent lower id', status: 'urgent' },
+      { name: 'September urgent first created', status: 'urgent' },
+      { name: 'September urgent second created', status: 'urgent' },
       { name: 'September normal internet', status: 'normal' },
       { name: 'September paid water', status: 'paid' }
     ]);
@@ -79,8 +79,8 @@ describe('Service list HTTP integration', () => {
 
     expect(range.body.data.map(({ name }) => name)).toEqual([
       'September lower boundary',
-      'September urgent higher id',
-      'September urgent lower id'
+      'September urgent first created',
+      'September urgent second created'
     ]);
 
     const paid = await request(app)
