@@ -6,6 +6,8 @@
   "service.name": "Service name",
   "service.type": "Service type",
   "service.amount": "Amount",
+  "service.amount.unavailable": "—",
+  "service.currency": "MXN",
   "service.paymentDate": "Payment date",
   "service.dueDate": "Due date",
   "service.selectDate": "Select date",

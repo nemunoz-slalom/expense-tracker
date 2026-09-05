@@ -15,10 +15,14 @@ interface ServiceItemProps {
 export function ServiceItem({ service, onEdit, onPaid, onDelete }: ServiceItemProps): JSX.Element {
   const { t } = useTranslation();
   const status = t(`service.status.${service.status}`);
+  const formattedAmount = service.amount === null
+    ? t('service.amount.unavailable')
+    : service.amount.toLocaleString(undefined, { style: 'currency', currency: t('service.currency') });
+
   return <Card className="service-item">
     <div><strong>{service.name}</strong><span>{t(`service.type.${service.type}`)}</span></div>
     <Badge className={`status-${service.status}`}>{status}</Badge>
-    <div>{service.amount === null ? '—' : service.amount.toLocaleString(undefined, { style: 'currency', currency: 'MXN' })}</div>
+    <div>{formattedAmount}</div>
     <div>{service.dueDate}</div>
     <div className="service-actions">
       {!service.paid && <Button className="secondary" onClick={() => onPaid(service)}>{t('service.markPaid')}</Button>}
