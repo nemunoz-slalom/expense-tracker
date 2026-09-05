@@ -166,7 +166,7 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 - [X] T056 [P] [US4] Write monthly/bimonthly period derivation, zero filling, null exclusion, full bimonthly amount, and average unit tests in `server/__tests__/unit/stats.service.test.js`
 - [X] T057 [P] [US4] Write shared-selection report fields, counts, filter labels, and valid HTTP 200 empty-result PDF unit tests in `server/__tests__/unit/pdf.service.test.js`
 - [X] T058 [P] [US4] Write fresh-SQLite statistics and binary-PDF contract integration tests, including valid HTTP 200 empty exports, in `server/__tests__/integration/stats-export.test.js`
-- [ ] T059 [P] [US4] Write mocked-transport chart visibility, period labeling, average, export query, download, and localized empty-report success-feedback UI tests in `client/__tests__/stats-export.test.tsx`
+- [X] T059 [P] [US4] Write mocked-transport chart visibility, period labeling, average, export query, download, and localized empty-report success-feedback UI tests in `client/__tests__/stats-export.test.tsx`
 - [ ] T060 [P] [US4] Write independent type-filtered chart and filtered-PDF Chromium journeys in `tests/e2e/stats-export.spec.ts`
 
 ### Implementation for User Story 4
@@ -174,7 +174,7 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 - [X] T061 [US4] Implement server-local, series-first billing-period aggregation without durable periods in `server/services/stats.service.js`
 - [X] T062 [US4] Implement binary PDF rendering from the reusable filtered ordered selection, including filter context, zero counts, no rows, and an explicit no-data statement for a valid empty result, in `server/services/pdf.service.js`
 - [X] T063 [US4] Implement static statistics and PDF route handlers before parameterized service-ID routes in `server/routes/stats.routes.js`, `server/routes/export.routes.js`, and `server/app.js`
-- [ ] T064 [US4] Implement typed statistics/export fetches, selected-type state, localized period formatting, chart display, and filtered download actions in `client/src/api/stats.api.ts`, `client/src/api/export.api.ts`, `client/src/hooks/useConsumptionStats.ts`, `client/src/components/ConsumptionByPeriodChart.tsx`, and `client/src/App.tsx`
+- [X] T064 [US4] Implement typed statistics/export fetches, selected-type state, localized period formatting, chart display, and filtered download actions in `client/src/api/stats.api.ts`, `client/src/api/export.api.ts`, `client/src/hooks/useConsumptionStats.ts`, `client/src/components/ConsumptionByPeriodChart.tsx`, and `client/src/App.tsx`
 
 **Checkpoint**: US4 returns exactly the requested server-anchored periods regardless of list filters or paid state, shows no chart for All types, and exports the same active filtered order with accurate status and paid/pending counts.
 

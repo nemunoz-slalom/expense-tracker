@@ -5,10 +5,13 @@ import { ServiceForm } from './components/ServiceForm';
 import { DeleteConfirmation } from './components/DeleteConfirmation';
 import { DateFilterValue } from './components/DateFilter';
 import { FilterPanel } from './components/FilterPanel';
+import { ConsumptionByPeriodChart } from './components/ConsumptionByPeriodChart';
 import { ServiceList } from './components/ServiceList';
 import { UndoToast } from './components/UndoToast';
 import { Button } from '@/components/ui/button';
+import * as exportApi from './api/export.api';
 import { useServices } from './hooks/useServices';
+import { useConsumptionStats } from './hooks/useConsumptionStats';
 import { ToastProvider, useToasts } from './hooks/useToasts';
 import { useUndoTimer } from './hooks/useUndoTimer';
 import { CreateServiceRequest, ServiceFilters, ServiceResponse, ServiceType } from './types/services';
@@ -44,6 +47,8 @@ function ServiceManager(): JSX.Element {
   const [typeFilter, setTypeFilter] = useState<ServiceType | undefined>();
   const filters = useMemo(() => filtersFor(dateFilter, typeFilter), [dateFilter, typeFilter]);
   const { services, isLoading, error, create, update, remove, notify } = useServices(filters);
+  const consumption = useConsumptionStats(typeFilter);
+  const [isExporting, setIsExporting] = useState(false);
   const { start, cancel } = useUndoTimer();
   const messageFor = (caught: unknown): string => caught instanceof Error ? caught.message : t('error.default');
   const save = async (data: CreateServiceRequest): Promise<void> => {
@@ -90,6 +95,18 @@ function ServiceManager(): JSX.Element {
     if (!deleting) return;
     try { await remove(deleting.id); success(t('service.deleted')); setDeleting(null); } catch (caught) { showError(messageFor(caught)); }
   };
+  const exportPdf = async (): Promise<void> => {
+    setIsExporting(true);
+    try {
+      await exportApi.exportServicesPdf(filters);
+      const isKnownEmpty = !isLoading && !error && services.length === 0;
+      success(t(isKnownEmpty ? 'report.emptyExportSuccess' : 'report.exportSuccess'));
+    } catch (caught) {
+      showError(messageFor(caught));
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return <main className="app-shell">
     <header><h1>{t('app.title')}</h1><p>{t('app.subtitle')}</p><Button onClick={() => { setEditing(null); setRestoredValues(null); setFormOpen(true); }}>{t('service.create')}</Button></header>
@@ -100,6 +117,10 @@ function ServiceManager(): JSX.Element {
       onTypeChange={setTypeFilter}
       onReset={() => { setDateFilter(defaultDateFilter); setTypeFilter(undefined); }}
     />
+    <Button variant="outline" onClick={() => void exportPdf()} disabled={isExporting}>
+      {isExporting ? t('report.exporting') : t('report.export')}
+    </Button>
+    <ConsumptionByPeriodChart {...consumption} />
     {error && <p role="alert">{error.message}</p>}
     <ServiceList services={services} isLoading={isLoading} isFiltered={Boolean(typeFilter) || dateFilter.mode !== 'allTime'} onEdit={(service) => { setEditing(service); setFormOpen(true); }} onPaid={(service) => void markPaid(service)} onDelete={setDeleting} />
     <ServiceForm open={formOpen} service={editing} initialValues={restoredValues} onOpenChange={setFormOpen} onSubmit={save} />
