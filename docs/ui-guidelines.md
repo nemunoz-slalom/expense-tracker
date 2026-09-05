@@ -11,12 +11,12 @@ The Services App shall use a clear, consistent, and accessible interface that ma
 UI changes must follow this document and the frozen API contract in `api-contract.md`. Feature agents should not modify global UI guidelines unless a reusable cross-cutting convention changes.
 
 
-- Build the UI on top of [shadcn/ui](https://ui.shadcn.com/) — a set of accessible, unstyled React components copied directly into the codebase and styled with Tailwind CSS. Components live under `client/src/components/ui/` and are owned by the project (edit them freely).
+- Build the UI on top of [shadcn/ui](https://ui.shadcn.com/) — canonical component sources owned by the project and styled with Tailwind CSS. Components live under `client/src/components/ui/`, use lowercase kebab-case filenames, and are imported through `@/components/ui/*` (for example, `@/components/ui/button`).
 - Use Radix UI primitives (bundled by shadcn/ui) as the accessibility foundation: focus management, keyboard navigation, ARIA roles, and screen-reader announcements come from Radix and shall not be reimplemented.
 - Style shadcn/ui components with CSS variables mapped to the defined palette so the theme is applied uniformly.
 - Compose feature components (`ServiceForm`, `ServiceList`, `ServiceItem`, etc.) on top of shadcn primitives (`Button`, `Input`, `Dialog`, `Toast`, `Table`, `Badge`, `Card`). Extend, don't replace.
 - Add Framer Motion animations on top of shadcn components for entrance, exit, and hover transitions. Animations should enhance perceived responsiveness; they must not block a user from completing a task, and they should be disabled when the user prefers reduced motion.
-- Custom styling shall extend the theme variables rather than introduce one-off colors or sizes.
+- Custom styling shall extend theme variables and Tailwind's standard spacing, typography, radius, and semantic-color utilities rather than introduce one-off colors or sizes.
 - Do not import Material UI, Chakra, Ant Design, or another component library alongside shadcn/ui; a single design system keeps the app coherent.
 
 ---
@@ -85,7 +85,7 @@ The app uses the defined color palette. Do not substitute or introduce off-palet
 - Keep all critical actions (create, edit, delete) within a single viewport scroll (no side-scrolling on any device ≥768px).
 
 ### Typography
-- **Base font size:** 16px for body text (minimum for readability).
+- **Base font size:** Tailwind `text-sm` (14px) for compact app body text; form controls retain accessible sizing and semantic labels.
 - **Headings:** Use semantic hierarchy (h1 for app title, h2 for sections, h3 for subsections).
 - **Font family:** System stack or web-safe sans-serif (e.g., `'Segoe UI', Tahoma, Geneva, Verdana, sans-serif`).
 - **Font weights:**
@@ -96,7 +96,7 @@ The app uses the defined color palette. Do not substitute or introduce off-palet
 - **Letter spacing:** Default (no additional spacing); use font weight to create emphasis instead.
 
 ### Spacing
-- Use consistent spacing increments: 4px, 8px, 12px, 16px, 24px, 32px, 48px.
+- Use Tailwind's spacing scale rather than literal values: `gap-1`, `gap-2`, `gap-3`, `gap-4`, `gap-6`, `gap-8`, and `gap-12` (4px, 8px, 12px, 16px, 24px, 32px, and 48px respectively).
 - **Margin between sections:** 24px or 32px.
 - **Padding within components:** 12px to 16px (comfortable touch targets).
 - **Gap between form fields:** 16px.
@@ -188,6 +188,9 @@ All user-facing text shall be externalized to i18n locale files rather than hard
 - Native HTML5 `<input type="date">` MUST NOT be used anywhere in the application UI.
 - No other component library may supply date controls.
 - The trigger button shows the selected date in the display format, or a localized placeholder when empty.
+- A selected date is displayed in English as `Weekday DD, Mon.` (for example, `Tuesday 09, Sep.`); its internal and API value remains `YYYY-MM-DD`.
+- Selecting a date closes the corresponding Popover.
+- In ServiceForm, Due date is shown before optional Payment date. A selected Payment date has an accessible X clear action positioned within the right side of its field; it is hidden when no payment date is present.
 - The trigger button carries the same label, focus ring, and validation treatment as text inputs.
 - The `Calendar` popover must be keyboard navigable and dismissible with `Escape`.
 
@@ -573,11 +576,11 @@ The app shall target WCAG 2.1 AA conformance.
 
 The project uses shadcn/ui components as the base for every interactive element. Feature components compose these primitives; do not build alternate versions of the same primitive.
 
-### shadcn/ui primitives to install
+### shadcn/ui primitives provided by the project
 
-The following 18 shadcn/ui primitives shall be installed via the shadcn CLI into `client/src/components/ui/`:
+The following 18 canonical shadcn/ui primitives are maintained in `client/src/components/ui/`:
 
-`AlertDialog`, `Badge`, `Button`, `Calendar`, `Card`, `Chart`, `Dialog`, `DropdownMenu`, `Input`, `Label`, `Popover`, `Progress`, `Select`, `Separator`, `Skeleton`, `Sonner`, `Table`, `Tooltip`
+`alert-dialog`, `badge`, `button`, `calendar`, `card`, `chart`, `dialog`, `dropdown-menu`, `input`, `label`, `popover`, `progress`, `select`, `separator`, `skeleton`, `sonner`, `table`, `tooltip`
 
 ### Primitive → use case mapping
 
@@ -596,8 +599,8 @@ The following 18 shadcn/ui primitives shall be installed via the shadcn CLI into
 | `Input` | "Service name" field, "Amount" field (type=number, step=0.01) | Always paired with `Label` |
 | `Label` | Every form field | Persistent visible label above each input |
 | `Select` | "Service type" in bill form (Electricity, Gas, Internet, Mobile, Water); "Type" filter in filter panel (All + 5 types) | `SelectTrigger` + `SelectContent` + `SelectItem` per option |
-| `Calendar` | "Payment date" picker (single mode), "Due date" picker (single mode), Custom range date filter (range mode) | Wrapped in `Popover` |
-| `Popover` | Wraps `Calendar` in form date pickers; wraps preset list + Range Calendar in date filter | `PopoverTrigger` (button or text) + `PopoverContent` |
+| `Calendar` | "Due date", "Payment date", "Start date", and "End date" pickers (single mode) | Wrapped in `Popover`; closes on selection |
+| `Popover` | Wraps each Calendar date picker in the form and date filter | `PopoverTrigger` (button or text) + `PopoverContent` |
 
 #### Data Display
 | Component | Where Used | Configuration |
@@ -632,9 +635,9 @@ Each feature component in `client/src/components/` composes the primitives above
 
 - **App.tsx** — Sonner `<Toaster />` provider, layout: header + `FilterPanel` + `ServiceList` + `ConsumptionByPeriodChart` (conditional).
 - **FilterPanel.tsx** — `DateFilter` + `TypeFilter` + `Button` (Export PDF, outline) + `Button` (+ New bill, default). Wrapped in a `Card` or `div`.
-- **DateFilter.tsx** — `Popover` > preset list (4 × `Button` ghost: This month ✓, Last month, Custom range..., All time) or `Calendar` mode=range + `Button` (Apply) + `Button` (Back).
+- **DateFilter.tsx** — preset `Select` plus two `Popover` > single-mode `Calendar` controls for Custom range start and end dates.
 - **TypeFilter.tsx** — `Select` with All + 5 service type options.
-- **ServiceForm.tsx** — `Dialog` > `Label` + `Input` (name) + `Select` (type) + `Input` (amount, type=number) + `Popover` > `Calendar` (payment date) + `Popover` > `Calendar` (due date) + `DialogFooter` > `Button` (Save, disabled until valid) + `Button` (Cancel).
+- **ServiceForm.tsx** — `Dialog` > `Label` + `Input` (name) + `Select` (type) + `Input` (amount, type=number) + `Popover` > `Calendar` (due date) + `Popover` > `Calendar` (optional payment date with inline clear action) + `DialogFooter` > `Button` (Save, disabled until valid) + `Button` (Cancel).
 - **ServiceList.tsx** — `Table` (≥768px) or `Card` list (<768px) + `Skeleton` (loading). Maps `ServiceItem` per row/card.
 - **ServiceItem.tsx** — Desktop: `TableRow` > 7 × `TableCell` in order: name, type, amount (right-aligned, "$X,XXX.XX" or "—"), payment date ("MMM DD" or "—"), due date ("MMM DD"), status (`Badge`), actions (flex justify-end: `Button` Mark as paid + `DropdownMenu` ⋮, kebab always rightmost). Mobile: `Card` > `CardHeader` (name left + `Badge` right) + `CardContent` (type · amount, due · paid) + `CardFooter` (actions right-aligned, same kebab-rightmost rule).
 - **DeleteConfirmation.tsx** — `AlertDialog` > title + body (name + type) + `AlertDialogAction` (Confirm, destructive) + `AlertDialogCancel` (Cancel).
@@ -643,7 +646,7 @@ Each feature component in `client/src/components/` composes the primitives above
 
 ### Rules
 
-- Components live under `client/src/components/ui/` (installed via the shadcn CLI). Edit them directly to adjust theme or behavior; do not shadow them with a wrapper unless there's a clear repeated-use reason.
+- Components live under `client/src/components/ui/` as project-owned canonical sources. Edit them directly to adjust theme or behavior; do not shadow them with a wrapper unless there's a clear repeated-use reason.
 - Feature components (in `client/src/components/`) compose these primitives; a feature component's file should mostly be layout and event wiring, not styling.
 - When a needed component is not in shadcn/ui, first check the community registry ([ui.shadcn.com/blocks](https://ui.shadcn.com/blocks) and third-party registries); if still missing, build on Radix primitives directly rather than reaching for another library.
 - Style customization goes through Tailwind classes or CSS variables, never through inline `style={{...}}` overriding shadcn's design.

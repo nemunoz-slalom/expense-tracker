@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import { ServiceResponse } from '../types/services';
+import { ServiceResponse } from '@/types/services';
 import { ServiceItem } from './ServiceItem';
 
 interface ServiceListProps {

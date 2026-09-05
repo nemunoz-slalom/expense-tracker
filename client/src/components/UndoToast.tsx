@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UNDO_DURATION_MS } from '../hooks/useUndoTimer';
-import { Button } from './ui/Button';
-import { Progress } from './ui/Progress';
+import { UNDO_DURATION_MS } from '@/hooks/useUndoTimer';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 
 interface UndoToastProps {
   expiresAt: number;

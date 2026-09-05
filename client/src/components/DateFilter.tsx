@@ -1,10 +1,11 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Calendar } from './ui/Calendar';
-import { Button } from './ui/Button';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/Popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/Select';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { dateFromKey, dateKey, dateLabel } from '@/lib/date';
 
 export type DateFilterMode = 'currentMonth' | 'previousMonth' | 'custom' | 'allTime';
 
@@ -22,6 +23,8 @@ interface DateFilterProps {
 export function DateFilter({ value, onChange }: DateFilterProps): JSX.Element {
   const { t } = useTranslation();
   const dateRangeLabelId = useId();
+  const [fromCalendarOpen, setFromCalendarOpen] = useState(false);
+  const [toCalendarOpen, setToCalendarOpen] = useState(false);
   const setMode = (mode: DateFilterMode): void => onChange({ ...value, mode });
   const handleFromChange = (from: string): void => {
     const nextTo = value.to && from > value.to ? from : value.to;
@@ -47,24 +50,34 @@ export function DateFilter({ value, onChange }: DateFilterProps): JSX.Element {
       </Select>
       {value.mode === 'custom' && (
         <div className="custom-date-range">
-          <Popover>
+          <Popover open={fromCalendarOpen} onOpenChange={setFromCalendarOpen}>
             <PopoverTrigger asChild>
-              <Button className="date-button" aria-label={t('filter.startDate')}>
-                {value.from || t('filter.startDate')}
+              <Button variant="outline" className="date-button" aria-label={t('filter.startDate')}>
+                {value.from ? dateLabel(value.from) : t('filter.startDate')}
               </Button>
             </PopoverTrigger>
-            <PopoverContent>
-              <Calendar value={value.from} onSelect={handleFromChange} />
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={dateFromKey(value.from)} onSelect={(date) => {
+                if (date) {
+                  handleFromChange(dateKey(date));
+                  setFromCalendarOpen(false);
+                }
+              }} initialFocus />
             </PopoverContent>
           </Popover>
-          <Popover>
+          <Popover open={toCalendarOpen} onOpenChange={setToCalendarOpen}>
             <PopoverTrigger asChild>
-              <Button className="date-button" aria-label={t('filter.endDate')}>
-                {value.to || t('filter.endDate')}
+              <Button variant="outline" className="date-button" aria-label={t('filter.endDate')}>
+                {value.to ? dateLabel(value.to) : t('filter.endDate')}
               </Button>
             </PopoverTrigger>
-            <PopoverContent>
-              <Calendar value={value.to} onSelect={handleToChange} />
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={dateFromKey(value.to)} onSelect={(date) => {
+                if (date) {
+                  handleToChange(dateKey(date));
+                  setToCalendarOpen(false);
+                }
+              }} initialFocus />
             </PopoverContent>
           </Popover>
         </div>

@@ -21,6 +21,8 @@ The user shall be able to create a new bill by providing service name, type, and
 - The payment date is optional; if provided, it shall be a valid calendar date.
 - The due date is required and shall be a valid calendar date.
 - When payment date is provided, the due date shall be greater than or equal to the payment date.
+- In the form, Due date shall appear before optional Payment date. Selecting either date closes its calendar Popover and displays it as `Weekday DD, Mon.` (for example, `Tuesday 09, Sep.`), while persistence continues to use `YYYY-MM-DD`.
+- When a Payment date is selected, the form shall expose an accessible inline clear action; clearing it restores the optional field to an empty value.
 - After creation, the bill shall appear immediately in the bill list.
 - Each bill shall have a unique identifier and a creation timestamp.
 - A newly created bill shall default to unpaid status (`paid: false`).
@@ -93,7 +95,7 @@ The app shall send automatic Telegram notifications in two scenarios.
 ### FR-9: Date filter
 The app shall provide a single date-filter control with four presets and an optional custom range.
 - Default on load: "This month" (day 1 through last day of the current month).
-- Preset options: "This month", "Last month", "Custom range..." (opens Range Calendar), "All time".
+- Preset options: "This month", "Last month", "Custom range..." (opens Start date and End date single-date calendars), "All time".
 - Trigger text adapts: month name for full months, date range for custom, "All time" when cleared.
 - Selecting any option shall filter the bill list by due date in the corresponding date range. This ensures unpaid bills remain visible in the default current-month view.
 - The filtered list shall remain sorted by urgency (per FR-3).

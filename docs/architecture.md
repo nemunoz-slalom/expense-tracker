@@ -158,7 +158,7 @@ countdown.
 Components render UI and dispatch user events. They do not fetch data directly and do not contain business rules. When they need data or an action, they consume a hook.
 
 Components live in two subfolders:
-- **`client/src/components/ui/`** — shadcn/ui primitives installed via the shadcn CLI: `AlertDialog`, `Badge`, `Button`, `Calendar`, `Card`, `Chart`, `Dialog`, `DropdownMenu`, `Input`, `Label`, `Popover`, `Progress`, `Select`, `Separator`, `Skeleton`, `Sonner`, `Table`, `Tooltip`. These are project-owned files; edit them to tune the color scheme or add project-specific behavior (e.g., custom Badge variants for status colors).
+- **`client/src/components/ui/`** — project-owned canonical shadcn/ui sources. Files use shadcn's lowercase kebab-case convention (`alert-dialog.tsx`, `button.tsx`, `calendar.tsx`, etc.) and are imported as `@/components/ui/button`. Edit them to tune the theme or add project-specific behavior.
 - **`client/src/components/`** — feature components that compose the ui primitives: `App.tsx`, `FilterPanel.tsx`, `DateFilter.tsx`, `TypeFilter.tsx`, `ServiceForm.tsx`, `ServiceList.tsx`, `ServiceItem.tsx`, `DeleteConfirmation.tsx`, `UndoToast.tsx`, `ConsumptionByPeriodChart.tsx`.
 
 - **Depends on:** hooks, i18n, theme, ui primitives
@@ -203,8 +203,11 @@ Types define the shape of every object crossing a boundary: request bodies, resp
 ### Supporting Modules
 
 - **`client/src/locales/`** — i18n JSON files (`en.json`).
-- **`client/src/styles/`** — global CSS, color palette, and Tailwind config.
-- **`client/src/config/`** — runtime configuration read from `REACT_APP_*` environment variables.
+- **`client/src/styles/`** — global Tailwind layers and Dracula semantic color tokens.
+- **`client/tailwind.config.js`** and **`client/postcss.config.js`** — Tailwind/PostCSS configuration for canonical shadcn utilities.
+- **`client/craco.config.js`** — Create React App configuration for the `@/` alias in Webpack and Jest.
+- **`client/src/config/`** — runtime configuration read from `REACT_APP_*` environment variables. The API base URL defaults to `http://localhost:5000`.
+- **`client/src/lib/`** — framework-independent UI helpers, including `cn` and date-key/display formatting.
 - **`client/src/App.tsx`** — root component composing the layout.
 
 ### Frontend Data Flow: Mark a Service as Paid
@@ -277,7 +280,7 @@ services-app/
 ├── client/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── ui/           # shadcn/ui primitives (installed via CLI)
+│   │   │   ├── ui/           # canonical shadcn/ui primitives (kebab-case files)
 │   │   │   └── *.tsx         # feature components (compose ui/)
 │   │   ├── hooks/            # state and data orchestration
 │   │   ├── api/              # network layer (fetch calls)
@@ -288,7 +291,10 @@ services-app/
 │   │   ├── lib/              # shadcn/ui utils (cn helper, etc.)
 │   │   ├── App.tsx
 │   │   └── index.tsx
-│   └── __tests__/
+│   ├── __tests__/
+│   ├── tailwind.config.js
+│   ├── postcss.config.js
+│   └── craco.config.js
 │
 └── tests/
     └── e2e/              # Playwright tests + Page Object Model

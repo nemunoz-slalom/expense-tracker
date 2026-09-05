@@ -1,56 +1,29 @@
-import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { createContext, ReactNode, useContext } from 'react';
+import { toast } from 'sonner';
 
-import { Button } from '../components/ui/Button';
-
-type ToastKind = 'success' | 'error' | 'info';
-
-interface Toast {
-  id: number;
-  kind: ToastKind;
-  content: ReactNode;
-}
+import { Toaster } from '@/components/ui/sonner';
 
 interface ToastApi {
   success: (message: string) => void;
   error: (message: string) => void;
   info: (message: string) => void;
-  showUndo: (content: ReactNode) => number;
-  dismiss: (id: number) => void;
+  showUndo: (content: ReactNode) => string | number;
+  dismiss: (id: string | number) => void;
 }
 
 const ToastContext = createContext<ToastApi | null>(null);
 
 export function ToastProvider({ children }: { children: ReactNode }): JSX.Element {
-  const [toasts, setToasts] = useState<Toast[]>([]);
-  const dismiss = useCallback((id: number): void => {
-    setToasts((current) => current.filter((toast) => toast.id !== id));
-  }, []);
-  const show = useCallback((kind: ToastKind, content: ReactNode, autoDismiss = true): number => {
-    const id = Date.now() + Math.random();
-    setToasts((current) => [...current, { id, kind, content }]);
-    if (autoDismiss && kind !== 'error') window.setTimeout(() => dismiss(id), 3000);
-    return id;
-  }, [dismiss]);
-  const { t } = useTranslation();
-
   return (
     <ToastContext.Provider value={{
-      success: (message) => { show('success', message); },
-      error: (message) => { show('error', message); },
-      info: (message) => { show('info', message); },
-      showUndo: (content) => show('info', content, false),
-      dismiss,
+      success: (message) => { toast.success(message); },
+      error: (message) => { toast.error(message); },
+      info: (message) => { toast(message); },
+      showUndo: (content) => toast(content, { duration: Infinity }),
+      dismiss: toast.dismiss,
     }}>
       {children}
-      <div className="toaster" aria-live="polite" aria-atomic="true">
-        {toasts.map((toast) => (
-          <div key={toast.id} className={`toast toast-${toast.kind}`} role={toast.kind === 'error' ? 'alert' : 'status'}>
-            {toast.content}
-            <Button className="toast-dismiss" aria-label={t('toast.dismiss')} onClick={() => dismiss(toast.id)}>×</Button>
-          </div>
-        ))}
-      </div>
+      <Toaster />
     </ToastContext.Provider>
   );
 }

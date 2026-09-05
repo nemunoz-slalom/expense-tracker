@@ -48,7 +48,9 @@ describe('Undo creation notifications', () => {
     );
 
     expect((screen.getByLabelText('Service name') as HTMLInputElement).value).toBe('Internet');
-    expect(screen.getByRole('button', { name: 'Payment date' }).textContent).toBe('2026-09-04');
+    expect(screen.getByRole('button', { name: 'Payment date' }).textContent).toBe('Friday 04, Sep.');
+    fireEvent.click(screen.getByRole('button', { name: 'Clear payment date' }));
+    expect(screen.getByRole('button', { name: 'Payment date' }).textContent).toBe('Select date');
     form.unmount();
     render(<UndoToast expiresAt={Date.now() + 8_000} onUndo={onUndo} />);
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }));

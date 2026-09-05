@@ -7,7 +7,13 @@ This repository currently contains planning/documentation only. The commands bel
 - Node.js and npm compatible with the implementation package manifests.
 - A local writable project directory for SQLite.
 - No Telegram credentials are required for automated tests; Telegram transport is stubbed.
-- Configure a development environment file from the implementation-provided `.env.example`. Keep `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` server-only. Set the documented server-local timezone and allowed client origin.
+- Configure the repository-root development environment file before starting the server:
+
+  ```bash
+  cp .env.example .env
+  ```
+
+  Keep `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` server-only. Set the documented server-local timezone and allowed client origin.
 
 ## Install
 
