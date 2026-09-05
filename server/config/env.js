@@ -37,7 +37,7 @@ function loadConfig(environment = process.env, logger) {
   }
 
   return {
-    port: parsePort(PORT || '5000'),
+    port: parsePort(PORT || '5001'),
     databasePath: path.resolve(DATABASE_PATH),
     clientOrigin: parseOrigin(CLIENT_ORIGIN),
     telegram: hasTelegramToken && hasTelegramChatId

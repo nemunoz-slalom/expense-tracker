@@ -25,7 +25,7 @@ function createServer() {
   const telegramClient = createTelegramClient(config.telegram, logger);
   const notificationService = createNotificationService(telegramClient, logger);
   const serviceService = createServiceService(repository, undefined, notificationService);
-  const app = createApp({ serviceService, logger });
+  const app = createApp({ serviceService, logger, clientOrigin: config.clientOrigin });
 
   return { app, config, database, logger };
 }

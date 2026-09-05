@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const frontendUrl = process.env.TEST_FRONTEND_URL ?? 'http://localhost:3001';
-const backendUrl = process.env.TEST_BACKEND_URL ?? 'http://localhost:5001';
+const backendUrl = process.env.TEST_BACKEND_URL ?? 'http://localhost:5002';
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -25,8 +25,9 @@ export default defineConfig({
       timeout: 120_000,
       env: {
         NODE_ENV: 'test',
-        PORT: new URL(backendUrl).port || '5001',
-        DATABASE_PATH: 'services.test.db'
+        PORT: new URL(backendUrl).port || '5002',
+        DATABASE_PATH: 'services.test.db',
+        CLIENT_ORIGIN: frontendUrl
       }
     },
     {

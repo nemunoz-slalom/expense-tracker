@@ -195,10 +195,11 @@ The backend shall generate a PDF containing the same filtered bill set shown by 
 ### FR-14: Environment variables
 The backend shall read configuration from environment variables at startup.
 - **Configuration:**
-  - `PORT` (HTTP server port, default 5000)
+  - `PORT` (HTTP server port, default 5001)
   - `TELEGRAM_BOT_TOKEN` (optional; notification sending is skipped when absent)
   - `TELEGRAM_CHAT_ID` (optional; notification sending is skipped when absent)
   - `DATABASE_PATH` (path to SQLite database, default `./services.db`)
+  - `CLIENT_ORIGIN` (allowed frontend CORS origin, for example `http://localhost:3000`)
   - `NODE_ENV` (development|production, default development)
 - The app shall read these from a `.env` file if it exists.
 - Missing Telegram variables shall log a warning but shall not crash the application.
@@ -255,7 +256,7 @@ The backend shall handle moderate load efficiently.
 ### FR-20: CORS and security
 The backend shall implement basic CORS to allow frontend requests.
 - The API shall accept requests from `http://localhost:3000` (frontend dev server).
-- In production, CORS shall be configurable via environment variable.
+- The allowed CORS origin shall be configured through `CLIENT_ORIGIN`.
 - No authentication is required (personal use only).
 - The backend shall not expose sensitive information in error messages.
 

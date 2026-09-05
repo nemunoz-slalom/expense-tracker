@@ -76,10 +76,10 @@ To avoid conflicts with the development environment and between test runs, the p
 
 | Context | Frontend | Backend |
 |---------|----------|---------|
-| Development | 3000 | 5000 |
-| Test (integration + E2E) | 3001 | 5001 |
+| Development | 3000 | 5001 |
+| Test (integration + E2E) | 3001 | 5002 |
 
-Test configuration (Playwright's `webServer`, backend test setup) shall start each process on its test port. Tests shall connect to `http://localhost:3001` for the frontend and `http://localhost:5001` for the backend, driven by an environment variable (`TEST_FRONTEND_URL`, `TEST_BACKEND_URL`) so the ports can be changed in one place if needed.
+Test configuration (Playwright's `webServer`, backend test setup) shall start each process on its test port. Tests shall connect to `http://localhost:3001` for the frontend and `http://localhost:5002` for the backend, driven by an environment variable (`TEST_FRONTEND_URL`, `TEST_BACKEND_URL`) so the ports can be changed in one place if needed.
 
 The test database shall live in a separate file (`services.test.db`, configured through `DATABASE_PATH`) so test runs never touch development data.
 

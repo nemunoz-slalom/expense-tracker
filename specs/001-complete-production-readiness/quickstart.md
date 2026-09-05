@@ -52,7 +52,7 @@ npm run test:e2e
 
 Expected results:
 
-- Playwright starts the backend at `http://localhost:5001` and frontend at `http://localhost:3001`.
+- Playwright starts the backend at `http://localhost:5002` and frontend at `http://localhost:3001`.
 - Each test resets data independently and uses Page Object Model classes in `tests/e2e/pages/`.
 - The suite proves create/list, creation Undo, mark paid, edit/re-sort, confirmed delete, type-filtered consumption chart, and filtered PDF export.
 
@@ -68,7 +68,7 @@ cd server && npm start
 cd client && npm start
 ```
 
-Confirm the client at port 3000 talks only to the backend at port 5000. Exercise the following against the implementation commitments in [implementation-contract.md](contracts/implementation-contract.md), the data rules in [data-model.md](data-model.md), and the exact HTTP behavior in [`docs/api-contract.md`](../../docs/api-contract.md):
+Confirm the client at port 3000 talks only to the backend at port 5001. Exercise the following against the implementation commitments in [implementation-contract.md](contracts/implementation-contract.md), the data rules in [data-model.md](data-model.md), and the exact HTTP behavior in [`docs/api-contract.md`](../../docs/api-contract.md):
 
 1. Create an unpaid bill with valid type/name/due date and reload to confirm persistence.
 2. Create with a payment date, Undo before eight seconds, and confirm deletion with no notification request.

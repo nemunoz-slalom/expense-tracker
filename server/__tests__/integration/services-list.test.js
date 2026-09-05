@@ -24,11 +24,24 @@ describe('Service list HTTP integration', () => {
       repository,
       () => new Date(2026, 8, 4, 12)
     );
-    app = createApp({ serviceService, logger: { log: jest.fn() } });
+    app = createApp({
+      serviceService,
+      logger: { log: jest.fn() },
+      clientOrigin: 'http://localhost:3000'
+    });
   });
 
   afterEach(() => {
     databaseContext.cleanup();
+  });
+
+  test('allows requests from the configured client origin', async () => {
+    const response = await request(app)
+      .get('/api/services')
+      .set('Origin', 'http://localhost:3000');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['access-control-allow-origin']).toBe('http://localhost:3000');
   });
 
   async function createServices() {

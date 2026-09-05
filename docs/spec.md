@@ -32,6 +32,8 @@ The user shall be able to create a new bill by providing service name, type, and
 The user shall be able to view all bills or filtered subsets of bills.
 - The app shall display all bills if no filters are applied.
 - Bills shall display: service name, type, payment date, due date, paid status, and status badge.
+- Due and payment dates in the bill list shall use `Weekday DD, Mon.` in English (for example, `Tuesday 04, Aug.`), while API and persistence values remain `YYYY-MM-DD`.
+- When a bill's payment date is the current local date, the bill list shall display `Today` instead of the formatted date.
 - Each bill shall be uniquely identifiable by its ID.
 - The list shall load in under 2 seconds for up to 1000 bills.
 - The user shall be able to view a single bill's details.

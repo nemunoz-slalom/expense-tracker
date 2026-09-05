@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "craco start",
-    "start:test": "cross-env PORT=3001 REACT_APP_API_URL=http://localhost:5001 craco start",
+    "start:test": "cross-env PORT=3001 REACT_APP_API_URL=http://localhost:5002 craco start",
     "test": "react-scripts test",
     "test:unit": "node -e \"const fs=require('fs'); const {spawnSync}=require('child_process'); if(!fs.existsSync('src')) process.exit(0); const r=spawnSync('craco', ['test','--watchAll=false','--passWithNoTests'], {stdio:'inherit', shell:true}); process.exit(r.status ?? 1);\"",
     "lint": "eslint --no-error-on-unmatched-pattern \"src/**/*.{js,jsx,ts,tsx}\"",

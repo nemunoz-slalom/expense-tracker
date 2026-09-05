@@ -41,6 +41,8 @@ The frontend shall load and display the app with correct theme on first render.
 ### FR-2: Display bill list
 The frontend shall render a list of bills with all relevant information.
 - Each bill shall display: service name, type, amount (formatted as $X,XXX.XX if set), payment date (if set), due date, and status badge.
+- Due and payment dates shall be displayed in English as `Weekday DD, Mon.` (for example, `Tuesday 04, Aug.`). If the payment date is the current local date, it shall be displayed as `Today`.
+- Display formatting shall not alter the `YYYY-MM-DD` values exchanged with the API.
 - The list shall use shadcn `Table` on desktop and tablet (≥768px) and shadcn `Card` on mobile (<768px, graceful degradation).
 - Bills shall be sorted by urgency as received from the backend.
 - Each bill item shall have a unique visual identifier.
@@ -405,7 +407,7 @@ The Frontend shall support keyboard navigation and accessibility features.
 
 ### FR-22: API communication
 The frontend shall communicate with the backend API using standard REST conventions.
-- Base URL: environment variable REACT_APP_API_URL (default `http://localhost:5000`).
+- Base URL: environment variable REACT_APP_API_URL (default `http://localhost:5001`).
 - All requests shall use JSON content-type.
 - Dates sent to API shall be ISO 8601 format (YYYY-MM-DD).
 - Timestamps received from API shall be parsed as ISO 8601.
