@@ -26,7 +26,7 @@ function ServiceManager(): JSX.Element {
         await create(data);
         success(t('service.created'));
       }
-    } catch (caught) { showError(messageFor(caught)); throw caught; }
+    } catch (caught) { showError(messageFor(caught)); }
   };
   const markPaid = async (service: ServiceResponse): Promise<void> => {
     try { await update(service.id, { paid: true }); success(t('service.paid')); } catch (caught) { showError(messageFor(caught)); }
