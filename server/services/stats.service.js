@@ -44,8 +44,9 @@ function createStatsService(repository, clock = () => new Date()) {
       }
     }
 
-    const result = series.map(({ period }) => ({ period, amount: totals.get(period) }));
-    const average = result.reduce((total, { amount }) => total + amount, 0) / periods;
+    const roundCurrency = (value) => Math.round((value + Number.EPSILON) * 100) / 100;
+    const result = series.map(({ period }) => ({ period, amount: roundCurrency(totals.get(period)) }));
+    const average = roundCurrency(result.reduce((total, { amount }) => total + amount, 0) / periods);
     return { type, periods: result, average };
   }
 
