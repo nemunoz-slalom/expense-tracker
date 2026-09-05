@@ -145,11 +145,13 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 
 ### Implementation for User Story 3
 
+This PR intentionally does not include User Story 3's Undo/notification work; the current scope is limited to US2 filtering, ordering, and API serialization. The Undo timer and Telegram notification tasks remain planned for a follow-up change set.
+
 - [ ] T051 [US3] Implement server-only, redacted, best-effort Telegram transport in `server/external/telegram.client.js`
 - [ ] T052 [US3] Implement creation and payment notification formatting and sending without timer ownership in `server/services/notification.service.js`
 - [ ] T053 [US3] Trigger payment notification only after a successful false-to-true atomic transition in `server/services/service.service.js`
 - [ ] T054 [US3] Implement application-notify endpoint delegation and no-notification DELETE behavior in `server/routes/services.routes.js`
-- [X] T055 [US3] Implement local keyed timers, accessible Undo countdown feedback, restored form values, and toast actions in `client/src/hooks/useUndoTimer.ts`, `client/src/hooks/useToasts.ts`, `client/src/hooks/useServices.ts`, and `client/src/components/UndoToast.tsx`
+- [ ] T055 [US3] Implement local keyed timers, accessible Undo countdown feedback, restored form values, and toast actions in `client/src/hooks/useUndoTimer.ts`, `client/src/hooks/useToasts.ts`, `client/src/hooks/useServices.ts`, and `client/src/components/UndoToast.tsx`
 
 **Checkpoint**: US3 has no backend creation timer, queue, schedule, or cancellation endpoint. Undo deletes without delivery; natural expiry requests exactly one notification; paid delivery is immediate only on the first false-to-true transition and cannot fail the saved mutation.
 
