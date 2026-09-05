@@ -7,7 +7,9 @@ const { createServiceRepository } = require('./repositories/service.repository')
 const { createTelegramClient } = require('./external/telegram.client');
 const { createApp } = require('./app');
 const { createNotificationService } = require('./services/notification.service');
+const { createPdfService } = require('./services/pdf.service');
 const { createServiceService } = require('./services/service.service');
+const { createStatsService } = require('./services/stats.service');
 const { createLogger } = require('./utils/logger');
 
 function startServer(app, config, logger) {
@@ -25,7 +27,9 @@ function createServer() {
   const telegramClient = createTelegramClient(config.telegram, logger);
   const notificationService = createNotificationService(telegramClient, logger);
   const serviceService = createServiceService(repository, undefined, notificationService);
-  const app = createApp({ serviceService, logger, clientOrigin: config.clientOrigin });
+  const statsService = createStatsService(repository);
+  const pdfService = createPdfService(serviceService);
+  const app = createApp({ serviceService, statsService, pdfService, logger, clientOrigin: config.clientOrigin });
 
   return { app, config, database, logger };
 }

@@ -2,14 +2,22 @@ const express = require('express');
 const cors = require('cors');
 
 const { isDomainError } = require('./services/errors');
+const { createExportRouter } = require('./routes/export.routes');
 const { createServicesRouter } = require('./routes/services.routes');
+const { createStatsRouter } = require('./routes/stats.routes');
 const { createLogger } = require('./utils/logger');
 
-function createApp({ serviceService, logger = createLogger(), clientOrigin }) {
+function createApp({ serviceService, statsService, pdfService, logger = createLogger(), clientOrigin }) {
   const app = express();
 
   app.use(express.json());
   app.use(cors({ origin: clientOrigin || false }));
+  if (statsService) {
+    app.use('/api/services/stats', createStatsRouter(statsService));
+  }
+  if (pdfService) {
+    app.use('/api/services/export', createExportRouter(pdfService));
+  }
   app.use('/api/services', createServicesRouter(serviceService));
   app.use((error, request, response, next) => {
     void next;
