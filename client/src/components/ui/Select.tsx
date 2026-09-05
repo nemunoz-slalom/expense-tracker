@@ -11,6 +11,12 @@ export function SelectTrigger(props: SelectPrimitive.SelectTriggerProps): JSX.El
   return <SelectPrimitive.Trigger className="input select-trigger" {...props} />;
 }
 
-export function SelectContent(props: SelectPrimitive.SelectContentProps): JSX.Element {
-  return <SelectPrimitive.Content className="select-content" position="popper" {...props} />;
+export function SelectContent({ children, ...props }: SelectPrimitive.SelectContentProps): JSX.Element {
+  return (
+    <SelectPrimitive.Portal>
+      <SelectPrimitive.Content className="select-content" position="popper" {...props}>
+        <SelectPrimitive.Viewport>{children}</SelectPrimitive.Viewport>
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  );
 }
