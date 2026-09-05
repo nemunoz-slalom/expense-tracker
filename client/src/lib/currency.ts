@@ -4,7 +4,7 @@ export function formatAmount(value: number): string {
 
 export function normalizeAmountInput(value: string): string {
   const [whole = '', ...fractionParts] = value.replace(/[^\d.]/g, '').split('.');
-  return fractionParts.length ? `${whole}.${fractionParts.join('').slice(0, 2)}` : whole;
+  return fractionParts.length ? `${whole || '0'}.${fractionParts.join('').slice(0, 2)}` : whole;
 }
 
 export function normalizeAmountEdit(value: string, previousValue: string): string {
