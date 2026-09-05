@@ -57,6 +57,17 @@ describe('Notification HTTP integration', () => {
       .expect({ error: 'NotFoundError', message: 'Service not found' });
   });
 
+  test('does not notify when deleting a service through the Undo path', async () => {
+    const created = await request(app)
+      .post('/api/services')
+      .send(createRequest({ paymentDate: '2026-09-01', dueDate: '2026-09-10' }))
+      .expect(201);
+
+    await request(app).delete(`/api/services/${created.body.data.id}`).expect(204);
+
+    expect(telegramClient.messages).toEqual([]);
+  });
+
   test('keeps notify successful without Telegram credentials', async () => {
     const created = await request(app).post('/api/services').send(createRequest()).expect(201);
     const unavailableApp = createApp({
