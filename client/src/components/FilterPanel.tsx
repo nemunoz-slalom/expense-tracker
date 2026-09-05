@@ -24,6 +24,7 @@ export function FilterPanel({ dateFilter, type, onDateFilterChange, onTypeChange
   useLayoutEffect(() => {
     const content = contentRef.current;
     if (!content) return undefined;
+    if (!window.ResizeObserver) return undefined;
 
     const updateHeight = (): void => {
       const panel = content.parentElement;
@@ -35,9 +36,8 @@ export function FilterPanel({ dateFilter, type, onDateFilterChange, onTypeChange
         + (Number.parseFloat(styles.borderBottomWidth) || 0);
       setContentHeight(content.getBoundingClientRect().height + verticalChrome);
     };
-    updateHeight();
-    if (!window.ResizeObserver) return undefined;
 
+    updateHeight();
     const observer = new window.ResizeObserver(updateHeight);
     observer.observe(content);
     return () => observer.disconnect();
