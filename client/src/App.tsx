@@ -1,21 +1,46 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ServiceForm } from './components/ServiceForm';
 import { DeleteConfirmation } from './components/DeleteConfirmation';
+import { DateFilterValue } from './components/DateFilter';
+import { FilterPanel } from './components/FilterPanel';
 import { ServiceList } from './components/ServiceList';
 import { Button } from './components/ui/Button';
 import { useServices } from './hooks/useServices';
 import { ToastProvider, useToasts } from './hooks/useToasts';
-import { CreateServiceRequest, ServiceResponse } from './types/services';
+import { CreateServiceRequest, ServiceFilters, ServiceResponse, ServiceType } from './types/services';
+
+function monthForOffset(offset: number): string {
+  const now = new Date();
+  const date = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+const defaultDateFilter: DateFilterValue = { mode: 'currentMonth', from: '', to: '' };
+
+function filtersFor(dateFilter: DateFilterValue, type?: ServiceType): ServiceFilters {
+  const filters: ServiceFilters = type ? { type } : {};
+  if (dateFilter.mode === 'currentMonth') return { ...filters, month: monthForOffset(0) };
+  if (dateFilter.mode === 'previousMonth') return { ...filters, month: monthForOffset(-1) };
+  if (dateFilter.mode === 'custom') {
+    return dateFilter.from && dateFilter.to
+      ? { ...filters, from: dateFilter.from, to: dateFilter.to }
+      : filters;
+  }
+  return filters;
+}
 
 function ServiceManager(): JSX.Element {
   const { t } = useTranslation();
-  const { services, isLoading, error, create, update, remove } = useServices();
   const { success, error: showError } = useToasts();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ServiceResponse | null>(null);
   const [deleting, setDeleting] = useState<ServiceResponse | null>(null);
+  const [dateFilter, setDateFilter] = useState<DateFilterValue>(defaultDateFilter);
+  const [typeFilter, setTypeFilter] = useState<ServiceType | undefined>();
+  const filters = useMemo(() => filtersFor(dateFilter, typeFilter), [dateFilter, typeFilter]);
+  const { services, isLoading, error, create, update, remove } = useServices(filters);
   const messageFor = (caught: unknown): string => caught instanceof Error ? caught.message : t('error.default');
   const save = async (data: CreateServiceRequest): Promise<void> => {
     try {
@@ -38,8 +63,15 @@ function ServiceManager(): JSX.Element {
 
   return <main className="app-shell">
     <header><h1>{t('app.title')}</h1><p>{t('app.subtitle')}</p><Button onClick={() => { setEditing(null); setFormOpen(true); }}>{t('service.create')}</Button></header>
+    <FilterPanel
+      dateFilter={dateFilter}
+      type={typeFilter}
+      onDateFilterChange={setDateFilter}
+      onTypeChange={setTypeFilter}
+      onReset={() => { setDateFilter(defaultDateFilter); setTypeFilter(undefined); }}
+    />
     {error && <p role="alert">{error.message}</p>}
-    <ServiceList services={services} isLoading={isLoading} onEdit={(service) => { setEditing(service); setFormOpen(true); }} onPaid={(service) => void markPaid(service)} onDelete={setDeleting} />
+    <ServiceList services={services} isLoading={isLoading} isFiltered={Boolean(typeFilter) || dateFilter.mode !== 'allTime'} onEdit={(service) => { setEditing(service); setFormOpen(true); }} onPaid={(service) => void markPaid(service)} onDelete={setDeleting} />
     <ServiceForm open={formOpen} service={editing} onOpenChange={setFormOpen} onSubmit={save} />
     <DeleteConfirmation serviceName={deleting?.name ?? null} onOpenChange={(open) => { if (!open) setDeleting(null); }} onConfirm={confirmDelete} />
   </main>;
