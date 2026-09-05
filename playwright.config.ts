@@ -26,7 +26,8 @@ export default defineConfig({
       env: {
         NODE_ENV: 'test',
         PORT: new URL(backendUrl).port || '5002',
-        DATABASE_PATH: 'services.test.db'
+        DATABASE_PATH: 'services.test.db',
+        CLIENT_ORIGIN: frontendUrl
       }
     },
     {
