@@ -119,8 +119,8 @@ function createServiceRepository(database) {
     return deleteStatement.run(id).changes > 0;
   }
 
-  function transaction(work) {
-    return database.transaction(work)();
+  function transaction(work, ...args) {
+    return database.transaction(work)(...args);
   }
 
   return {
