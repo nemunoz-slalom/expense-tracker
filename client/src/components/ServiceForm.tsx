@@ -13,6 +13,7 @@ import { CreateServiceRequest, ServiceResponse, ServiceType, serviceTypes } from
 interface ServiceFormProps {
   open: boolean;
   service: ServiceResponse | null;
+  initialValues?: CreateServiceRequest | null;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: CreateServiceRequest) => Promise<void>;
 }
@@ -27,7 +28,7 @@ interface FormValues {
 
 const emptyValues: FormValues = { name: '', type: '', amount: '', paymentDate: '', dueDate: '' };
 
-export function ServiceForm({ open, service, onOpenChange, onSubmit }: ServiceFormProps): JSX.Element {
+export function ServiceForm({ open, service, initialValues = null, onOpenChange, onSubmit }: ServiceFormProps): JSX.Element {
   const { t } = useTranslation();
   const [values, setValues] = useState<FormValues>(emptyValues);
   const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
@@ -37,9 +38,15 @@ export function ServiceForm({ open, service, onOpenChange, onSubmit }: ServiceFo
     setValues(service ? {
       name: service.name, type: service.type, amount: service.amount?.toString() ?? '',
       paymentDate: service.paymentDate ?? '', dueDate: service.dueDate,
+    } : initialValues ? {
+      name: initialValues.name,
+      type: initialValues.type,
+      amount: initialValues.amount?.toString() ?? '',
+      paymentDate: initialValues.paymentDate ?? '',
+      dueDate: initialValues.dueDate,
     } : emptyValues);
     setErrors({});
-  }, [service, open]);
+  }, [service, initialValues, open]);
 
   const submit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -73,7 +80,7 @@ export function ServiceForm({ open, service, onOpenChange, onSubmit }: ServiceFo
           <div className="form-field"><Label htmlFor="name">{t('service.name')}</Label><Input id="name" value={values.name} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? 'name-error' : undefined} onChange={(event) => update('name', event.target.value)} />{errors.name && <p id="name-error" className="field-error">{errors.name}</p>}</div>
           <div className="form-field"><Label>{t('service.type')}</Label><Select value={values.type} onValueChange={(value) => update('type', value)}><SelectTrigger aria-label={t('service.type')}><SelectValue placeholder={t('service.type')} /></SelectTrigger><SelectContent>{serviceTypes.map((type) => <SelectItem key={type} value={type}>{t(`service.type.${type}`)}</SelectItem>)}</SelectContent></Select>{errors.type && <p className="field-error">{errors.type}</p>}</div>
           <div className="form-field"><Label htmlFor="amount">{t('service.amount')}</Label><Input id="amount" type="number" min="0" step="0.01" value={values.amount} onChange={(event) => update('amount', event.target.value)} />{errors.amount && <p className="field-error">{errors.amount}</p>}</div>
-          {(['paymentDate', 'dueDate'] as const).map((field) => <div className="form-field" key={field}><Label>{t(`service.${field}`)}</Label><Popover><PopoverTrigger asChild><Button className="date-button">{values[field] || t('service.selectDate')}</Button></PopoverTrigger><PopoverContent><Calendar value={values[field]} onSelect={(date) => update(field, date)} /></PopoverContent></Popover>{errors[field] && <p className="field-error">{errors[field]}</p>}</div>)}
+          {(['paymentDate', 'dueDate'] as const).map((field) => <div className="form-field" key={field}><Label>{t(`service.${field}`)}</Label><Popover><PopoverTrigger asChild><Button className="date-button" aria-label={t(`service.${field}`)}>{values[field] || t('service.selectDate')}</Button></PopoverTrigger><PopoverContent><Calendar value={values[field]} onSelect={(date) => update(field, date)} /></PopoverContent></Popover>{errors[field] && <p className="field-error">{errors[field]}</p>}</div>)}
           <div className="form-actions"><Button type="button" className="secondary" onClick={() => onOpenChange(false)}>{t('service.cancel')}</Button><Button type="submit" disabled={isSaving}>{t('service.save')}</Button></div>
         </form>
       </DialogContent>
