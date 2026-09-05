@@ -41,11 +41,11 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 **Critical**: All work in this phase is a hard prerequisite for every user-story phase. Database/Data owns the schema, repository interface, and fixtures; Backend/API owns application wiring when routes are added later.
 
 - [ ] T009 Implement required server configuration validation and optional Telegram credential warnings in `server/config/env.js`
-- [ ] T010 [P] Implement isolated SQLite connection selection for development and test databases in `server/db/connection.js`
-- [ ] T011 Implement idempotent Service table constraints and documented query indexes in `server/db/schema.js`
-- [ ] T012 Implement startup migration initialization in `server/db/migrate.js`
-- [ ] T013 Implement parameterized Service repository mapping and transaction interface in `server/repositories/service.repository.js`
-- [ ] T014 [P] Create fresh-SQLite fixtures, database reset, and Telegram stubs in `server/__tests__/helpers/test-support.js`
+- [X] T010 [P] Implement isolated SQLite connection selection for development and test databases in `server/db/connection.js`
+- [X] T011 Implement idempotent Service table constraints and documented query indexes in `server/db/schema.js`
+- [X] T012 Implement startup migration initialization in `server/db/migrate.js`
+- [X] T013 Implement parameterized Service repository mapping and transaction interface in `server/repositories/service.repository.js`
+- [X] T014 [P] Create fresh-SQLite fixtures, database reset, and Telegram stubs in `server/__tests__/helpers/test-support.js`
 - [ ] T015 [P] Implement typed domain errors and redacted structured logging in `server/services/errors.js` and `server/utils/logger.js`
 - [ ] T016 [P] Write focused date, validation, filter, and sorting tests in `server/__tests__/unit/domain-utils.test.js`
 - [ ] T017 Implement strict calendar, server-local date, and identifier utilities in `server/utils/dates.js`
