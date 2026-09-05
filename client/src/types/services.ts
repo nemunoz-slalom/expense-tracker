@@ -55,6 +55,7 @@ export class ApiError extends Error {
 
   public constructor(status: number, payload: ApiErrorPayload) {
     super(payload.message);
+    Object.setPrototypeOf(this, new.target.prototype);
     this.name = 'ApiError';
     this.status = status;
     this.code = payload.error;
