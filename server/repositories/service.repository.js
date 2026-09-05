@@ -57,6 +57,17 @@ function createServiceRepository(database) {
       parameters.paid = filters.paid ? 1 : 0;
     }
 
+    if (filters.month !== undefined) {
+      const [year, month] = filters.month.split('-').map(Number);
+      const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+      const start = `${year}-${String(month).padStart(2, '0')}-01`;
+      const end = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+      conditions.push('due_date >= @monthStart');
+      parameters.monthStart = start;
+      conditions.push('due_date <= @monthEnd');
+      parameters.monthEnd = end;
+    }
+
     const from = filters.from || filters.dueDateFrom;
     if (from !== undefined) {
       conditions.push('due_date >= @from');

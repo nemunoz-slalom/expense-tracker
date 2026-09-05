@@ -40,17 +40,17 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 
 **Critical**: All work in this phase is a hard prerequisite for every user-story phase. Database/Data owns the schema, repository interface, and fixtures; Backend/API owns application wiring when routes are added later.
 
-- [ ] T009 Implement required server configuration validation and optional Telegram credential warnings in `server/config/env.js`
+- [X] T009 Implement required server configuration validation and optional Telegram credential warnings in `server/config/env.js`
 - [X] T010 [P] Implement isolated SQLite connection selection for development and test databases in `server/db/connection.js`
 - [X] T011 Implement idempotent Service table constraints and documented query indexes in `server/db/schema.js`
 - [X] T012 Implement startup migration initialization in `server/db/migrate.js`
 - [X] T013 Implement parameterized Service repository mapping and transaction interface in `server/repositories/service.repository.js`
 - [X] T014 [P] Create fresh-SQLite fixtures, database reset, and Telegram stubs in `server/__tests__/helpers/test-support.js`
-- [ ] T015 [P] Implement typed domain errors and redacted structured logging in `server/services/errors.js` and `server/utils/logger.js`
-- [ ] T016 [P] Write focused date, validation, filter, and sorting tests in `server/__tests__/unit/domain-utils.test.js`
-- [ ] T017 Implement strict calendar, server-local date, and identifier utilities in `server/utils/dates.js`
-- [ ] T018 Implement complete-Service and contract-query validation utilities, including HTTP 400 rejection of mixed `month` and `from`/`to` date-filter modes, in `server/utils/validation.js` and `server/utils/filters.js`
-- [ ] T019 Implement deterministic derived-status and urgency ordering utilities in `server/utils/sorting.js`
+- [X] T015 [P] Implement typed domain errors and redacted structured logging in `server/services/errors.js` and `server/utils/logger.js`
+- [X] T016 [P] Write focused date, validation, filter, and sorting tests in `server/__tests__/unit/domain-utils.test.js`
+- [X] T017 Implement strict calendar, server-local date, and identifier utilities in `server/utils/dates.js`
+- [X] T018 Implement complete-Service and contract-query validation utilities, including HTTP 400 rejection of mixed `month` and `from`/`to` date-filter modes, in `server/utils/validation.js` and `server/utils/filters.js`
+- [X] T019 Implement deterministic derived-status and urgency ordering utilities in `server/utils/sorting.js`
 
 **Checkpoint**: A fresh `services.test.db` can initialize the sole durable Service model, repository results are plain domain objects, and pure domain rules have passing focused tests. No status, billing period, timer, queue, account, category, budget, or authentication data is persisted.
 
@@ -80,8 +80,8 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 
 ### Tests for User Story 1
 
-- [ ] T020 [P] [US1] Write CRUD, complete-PATCH validation, and paid-transition unit tests in `server/__tests__/unit/service.service.test.js`
-- [ ] T021 [P] [US1] Write fresh-SQLite CRUD success, validation, not-found, restart-durability, and atomic-failure integration tests in `server/__tests__/integration/services-crud.test.js`
+- [X] T020 [P] [US1] Write CRUD, complete-PATCH validation, and paid-transition unit tests in `server/__tests__/unit/service.service.test.js`
+- [X] T021 [P] [US1] Write fresh-SQLite CRUD success, validation, not-found, restart-durability, and atomic-failure integration tests in `server/__tests__/integration/services-crud.test.js`
 - [X] T022 [P] [US1] Write typed CRUD request, envelope parsing, and API-error serialization tests in `client/__tests__/services.api.test.ts`
 - [X] T023 [P] [US1] Write mocked-transport form, list, edit, paid-action, and deletion-feedback integration tests in `client/__tests__/manage-services.test.tsx`
 - [ ] T024 [P] [US1] Write independent create/list, mark-paid, edit/re-sort, and confirmed-delete Chromium journeys in `tests/e2e/manage-services.spec.ts`
@@ -89,10 +89,10 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 ### Implementation for User Story 1
 
 - [X] T026 [US1] Implement the sole CRUD and application-notify browser-fetch boundary, without Telegram credentials or direct Telegram transport, in `client/src/api/services.api.ts`
-- [ ] T027 [US1] Implement create, get, update, paid-transition, delete, response-status projection, and complete-state validation in `server/services/service.service.js`
-- [ ] T028 [US1] Implement CRUD HTTP parsing, validation translation, no-content deletion, and client-safe errors in `server/routes/services.routes.js`
-- [ ] T029 [US1] Construct Express middleware, error handling, and core service-route mounting without listener startup in `server/app.js`
-- [ ] T030 [US1] Start the configured HTTP listener separately from application construction in `server/server.js`
+- [X] T027 [US1] Implement create, get, update, paid-transition, delete, response-status projection, and complete-state validation in `server/services/service.service.js`
+- [X] T028 [US1] Implement CRUD HTTP parsing, validation translation, no-content deletion, and client-safe errors in `server/routes/services.routes.js`
+- [X] T029 [US1] Construct Express middleware, error handling, and core service-route mounting without listener startup in `server/app.js`
+- [X] T030 [US1] Start the configured HTTP listener separately from application construction in `server/server.js`
 - [X] T031 [US1] Implement typed list state, CRUD actions, refetching, and stale-result protection in `client/src/hooks/useServices.ts`
 - [X] T032 [US1] Implement localized create and edit validation controls using shadcn primitives in `client/src/components/ServiceForm.tsx`
 - [X] T033 [US1] Implement the bill collection loading, empty, and action surface in `client/src/components/ServiceList.tsx`
