@@ -35,8 +35,8 @@ describe('Service list HTTP integration', () => {
     const services = [
       { name: 'August water', type: 'water', dueDate: '2026-08-31' },
       { name: 'September lower boundary', type: 'water', dueDate: '2026-09-01' },
-      { name: 'September urgent higher id', type: 'water', dueDate: '2026-09-10' },
-      { name: 'September urgent lower id', type: 'water', dueDate: '2026-09-10' },
+      { name: 'September urgent first created', type: 'water', dueDate: '2026-09-10' },
+      { name: 'September urgent second created', type: 'water', dueDate: '2026-09-10' }
       { name: 'September normal internet', type: 'internet', dueDate: '2026-09-30' },
       { name: 'October water', type: 'water', dueDate: '2026-10-01' }
     ];
