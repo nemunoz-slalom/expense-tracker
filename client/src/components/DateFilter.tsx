@@ -53,7 +53,7 @@ export function DateFilter({ value, onChange }: DateFilterProps): JSX.Element {
               </Button>
             </PopoverTrigger>
             <PopoverContent>
-              <Calendar value={value.to} onSelect={(to) => onChange({ ...value, to })} />
+              <Calendar value={value.to} onSelect={(to) => onChange({ ...value, to: value.from && to < value.from ? value.from : to })} />
             </PopoverContent>
           </Popover>
         </div>
