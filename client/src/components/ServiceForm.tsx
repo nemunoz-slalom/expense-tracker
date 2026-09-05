@@ -111,23 +111,26 @@ export function ServiceForm({ open, service, initialValues = null, onOpenChange,
   };
 
   const update = (field: keyof FormValues, value: string): void => {
-    setValues((current) => ({ ...current, [field]: value }));
-    if (!validationAttempt) return;
+    setValues((current) => {
+      const nextValues = { ...current, [field]: value };
+      if (!validationAttempt) return nextValues;
 
-    setErrors((currentErrors) => {
-      const nextErrors = { ...currentErrors };
-      const nextValues = { ...values, [field]: value };
+      setErrors((currentErrors) => {
+        const nextErrors = { ...currentErrors };
 
-      if (field === 'name' && value.trim()) delete nextErrors.name;
-      if (field === 'type' && value) delete nextErrors.type;
-      if (field === 'amount' && (!value || (Number.isFinite(Number(value)) && Number(value) >= 0))) delete nextErrors.amount;
-      if (field === 'dueDate') {
-        if (value) delete nextErrors.dueDate;
-        if (!nextValues.paymentDate || !value || nextValues.paymentDate <= value) delete nextErrors.paymentDate;
-      }
-      if (field === 'paymentDate' && (!value || !nextValues.dueDate || value <= nextValues.dueDate)) delete nextErrors.paymentDate;
+        if (field === 'name' && value.trim()) delete nextErrors.name;
+        if (field === 'type' && value) delete nextErrors.type;
+        if (field === 'amount' && (!value || (Number.isFinite(Number(value)) && Number(value) >= 0))) delete nextErrors.amount;
+        if (field === 'dueDate') {
+          if (value) delete nextErrors.dueDate;
+          if (!nextValues.paymentDate || !value || nextValues.paymentDate <= value) delete nextErrors.paymentDate;
+        }
+        if (field === 'paymentDate' && (!value || !nextValues.dueDate || value <= nextValues.dueDate)) delete nextErrors.paymentDate;
 
-      return nextErrors;
+        return nextErrors;
+      });
+
+      return nextValues;
     });
   };
   const updateAmount = (value: string, cursor: number): void => {
