@@ -24,10 +24,10 @@ export function DateFilter({ value, onChange }: DateFilterProps): JSX.Element {
 
   return (
     <div className="filter-field">
-      <label id="date-range-label">{t('filter.dateRange')}</label>
+      <label>{t('filter.dateRange')}</label>
       <Select value={value.mode} onValueChange={(mode) => setMode(mode as DateFilterMode)}>
-        <SelectTrigger aria-labelledby="date-range-label"><SelectValue /></SelectTrigger>
-        <SelectContent>
+        <SelectTrigger aria-label={t('filter.dateRange')}><SelectValue /></SelectTrigger>
+        <SelectContent
           <SelectItem value="currentMonth">{t('filter.currentMonth')}</SelectItem>
           <SelectItem value="previousMonth">{t('filter.previousMonth')}</SelectItem>
           <SelectItem value="custom">{t('filter.customRange')}</SelectItem>
