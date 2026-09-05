@@ -62,11 +62,11 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 
 **Critical**: These tasks may proceed in parallel with Phase 2 after T005, but T032–T036, T044–T045, T055, T064, and T073 must not begin until this platform is stable. Frontend/UI owns these shared files and merges them as one coordinated platform PR.
 
-- [ ] T025 [P] Define frozen-contract Service, DTO, filter, and typed API-error models in `client/src/types/services.ts`
-- [ ] T069 [P] Initialize localization and load the English catalog at the application entry point in `client/src/index.tsx` and `client/src/locales/en.json`
-- [ ] T070 [P] Install and configure project-owned accessible shadcn primitives in `client/src/components/ui/`
-- [ ] T071 [P] Define contrast-compliant dark theme tokens, focus states, touch targets, responsive rules, and reduced-motion overrides in `client/src/styles/globals.css`
-- [ ] T072 Implement persistent actionable error toasts and announced success/loading feedback in `client/src/hooks/useToasts.ts`
+- [X] T025 [P] Define frozen-contract Service, DTO, filter, and typed API-error models in `client/src/types/services.ts`
+- [X] T069 [P] Initialize localization and load the English catalog at the application entry point in `client/src/index.tsx` and `client/src/locales/en.json`
+- [X] T070 [P] Install and configure project-owned accessible shadcn primitives in `client/src/components/ui/`
+- [X] T071 [P] Define contrast-compliant dark theme tokens, focus states, touch targets, responsive rules, and reduced-motion overrides in `client/src/styles/globals.css`
+- [X] T072 Implement persistent actionable error toasts and announced success/loading feedback in `client/src/hooks/useToasts.ts`
 
 **Checkpoint**: The client has a working i18n provider, project-owned shadcn primitives, theme and accessibility tokens, and an announced toast surface. Feature components must consume these foundations rather than create substitutes.
 
@@ -82,23 +82,23 @@ Every task below uses `- [ ] TNNN [P] [USN] Description with exact path`. `[P]` 
 
 - [ ] T020 [P] [US1] Write CRUD, complete-PATCH validation, and paid-transition unit tests in `server/__tests__/unit/service.service.test.js`
 - [ ] T021 [P] [US1] Write fresh-SQLite CRUD success, validation, not-found, restart-durability, and atomic-failure integration tests in `server/__tests__/integration/services-crud.test.js`
-- [ ] T022 [P] [US1] Write typed CRUD request, envelope parsing, and API-error serialization tests in `client/__tests__/services.api.test.ts`
-- [ ] T023 [P] [US1] Write mocked-transport form, list, edit, paid-action, and deletion-feedback integration tests in `client/__tests__/manage-services.test.tsx`
+- [X] T022 [P] [US1] Write typed CRUD request, envelope parsing, and API-error serialization tests in `client/__tests__/services.api.test.ts`
+- [X] T023 [P] [US1] Write mocked-transport form, list, edit, paid-action, and deletion-feedback integration tests in `client/__tests__/manage-services.test.tsx`
 - [ ] T024 [P] [US1] Write independent create/list, mark-paid, edit/re-sort, and confirmed-delete Chromium journeys in `tests/e2e/manage-services.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T026 [US1] Implement the sole CRUD and application-notify browser-fetch boundary, without Telegram credentials or direct Telegram transport, in `client/src/api/services.api.ts`
+- [X] T026 [US1] Implement the sole CRUD and application-notify browser-fetch boundary, without Telegram credentials or direct Telegram transport, in `client/src/api/services.api.ts`
 - [ ] T027 [US1] Implement create, get, update, paid-transition, delete, response-status projection, and complete-state validation in `server/services/service.service.js`
 - [ ] T028 [US1] Implement CRUD HTTP parsing, validation translation, no-content deletion, and client-safe errors in `server/routes/services.routes.js`
 - [ ] T029 [US1] Construct Express middleware, error handling, and core service-route mounting without listener startup in `server/app.js`
 - [ ] T030 [US1] Start the configured HTTP listener separately from application construction in `server/server.js`
-- [ ] T031 [US1] Implement typed list state, CRUD actions, refetching, and stale-result protection in `client/src/hooks/useServices.ts`
-- [ ] T032 [US1] Implement localized create and edit validation controls using shadcn primitives in `client/src/components/ServiceForm.tsx`
-- [ ] T033 [US1] Implement the bill collection loading, empty, and action surface in `client/src/components/ServiceList.tsx`
-- [ ] T034 [US1] Implement bill identity, amount/date details, and valid paid/edit/delete actions in `client/src/components/ServiceItem.tsx`
-- [ ] T035 [US1] Implement cancellation-safe destructive confirmation with focus return in `client/src/components/DeleteConfirmation.tsx`
-- [ ] T036 [US1] Compose the MVP bill-management flow and mutation feedback in `client/src/App.tsx`
+- [X] T031 [US1] Implement typed list state, CRUD actions, refetching, and stale-result protection in `client/src/hooks/useServices.ts`
+- [X] T032 [US1] Implement localized create and edit validation controls using shadcn primitives in `client/src/components/ServiceForm.tsx`
+- [X] T033 [US1] Implement the bill collection loading, empty, and action surface in `client/src/components/ServiceList.tsx`
+- [X] T034 [US1] Implement bill identity, amount/date details, and valid paid/edit/delete actions in `client/src/components/ServiceItem.tsx`
+- [X] T035 [US1] Implement cancellation-safe destructive confirmation with focus return in `client/src/components/DeleteConfirmation.tsx`
+- [X] T036 [US1] Compose the MVP bill-management flow and mutation feedback in `client/src/App.tsx`
 
 **Checkpoint**: US1 is demoable and independently passing: valid bills survive restart, only the targeted bill mutates, paid records no longer expose the paid action, and confirmed deletion permanently removes only the selected record.
 

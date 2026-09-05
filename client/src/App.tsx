@@ -1,0 +1,50 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { ServiceForm } from './components/ServiceForm';
+import { DeleteConfirmation } from './components/DeleteConfirmation';
+import { ServiceList } from './components/ServiceList';
+import { Button } from './components/ui/Button';
+import { useServices } from './hooks/useServices';
+import { ToastProvider, useToasts } from './hooks/useToasts';
+import { CreateServiceRequest, ServiceResponse } from './types/services';
+
+function ServiceManager(): JSX.Element {
+  const { t } = useTranslation();
+  const { services, isLoading, error, create, update, remove } = useServices();
+  const { success, error: showError } = useToasts();
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<ServiceResponse | null>(null);
+  const [deleting, setDeleting] = useState<ServiceResponse | null>(null);
+  const messageFor = (caught: unknown): string => caught instanceof Error ? caught.message : t('error.default');
+  const save = async (data: CreateServiceRequest): Promise<void> => {
+    try {
+      if (editing) {
+        await update(editing.id, data);
+        success(t('service.updated'));
+      } else {
+        await create(data);
+        success(t('service.created'));
+      }
+    } catch (caught) { showError(messageFor(caught)); }
+  };
+  const markPaid = async (service: ServiceResponse): Promise<void> => {
+    try { await update(service.id, { paid: true }); success(t('service.paid')); } catch (caught) { showError(messageFor(caught)); }
+  };
+  const confirmDelete = async (): Promise<void> => {
+    if (!deleting) return;
+    try { await remove(deleting.id); success(t('service.deleted')); setDeleting(null); } catch (caught) { showError(messageFor(caught)); }
+  };
+
+  return <main className="app-shell">
+    <header><h1>{t('app.title')}</h1><p>{t('app.subtitle')}</p><Button onClick={() => { setEditing(null); setFormOpen(true); }}>{t('service.create')}</Button></header>
+    {error && <p role="alert">{error.message}</p>}
+    <ServiceList services={services} isLoading={isLoading} onEdit={(service) => { setEditing(service); setFormOpen(true); }} onPaid={(service) => void markPaid(service)} onDelete={setDeleting} />
+    <ServiceForm open={formOpen} service={editing} onOpenChange={setFormOpen} onSubmit={save} />
+    <DeleteConfirmation serviceName={deleting?.name ?? null} onOpenChange={(open) => { if (!open) setDeleting(null); }} onConfirm={confirmDelete} />
+  </main>;
+}
+
+export default function App(): JSX.Element {
+  return <ToastProvider><ServiceManager /></ToastProvider>;
+}
