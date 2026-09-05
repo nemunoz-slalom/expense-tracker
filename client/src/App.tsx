@@ -99,7 +99,8 @@ function ServiceManager(): JSX.Element {
     setIsExporting(true);
     try {
       await exportApi.exportServicesPdf(filters);
-      success(t(services.length ? 'report.exportSuccess' : 'report.emptyExportSuccess'));
+      const isKnownEmpty = !isLoading && !error && services.length === 0;
+      success(t(isKnownEmpty ? 'report.emptyExportSuccess' : 'report.exportSuccess'));
     } catch (caught) {
       showError(messageFor(caught));
     } finally {
